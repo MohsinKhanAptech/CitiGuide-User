@@ -88,7 +88,6 @@ class DetailViewBody extends StatelessWidget {
                   ),
                   DetailViewActionButton(
                     icon: Icons.location_on_outlined,
-                    activeIcon: Icons.location_on,
                     label: 'Open Maps',
                   ),
                   DetailViewActionButton(
@@ -146,12 +145,12 @@ class DetailViewActionButton extends StatefulWidget {
   const DetailViewActionButton({
     super.key,
     required this.icon,
-    required this.activeIcon,
+    this.activeIcon,
     required this.label,
   });
 
   final IconData icon;
-  final IconData activeIcon;
+  final IconData? activeIcon;
   final String label;
 
   @override
@@ -160,60 +159,52 @@ class DetailViewActionButton extends StatefulWidget {
 
 class _DetailViewActionButtonState extends State<DetailViewActionButton> {
   bool active = false;
+  IconData? currentIcon;
 
+  @override
+  void initState() {
+    super.initState();
+    currentIcon ??= widget.icon;
+  }
   void onTap() {
-    setState(() => active = !active);
+    setState(
+      () {
+        if (widget.activeIcon != null) {
+          active = !active;
+          if (active) {
+            currentIcon = widget.activeIcon;
+          } else {
+            currentIcon = widget.icon;
+          }
+        }
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!active) {
-      return InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: onTap,
-        child: Padding(
-          padding: EdgeInsets.all(12),
-          child: Column(
-            children: [
-              Icon(
-                widget.icon,
+    return InkWell(
+      borderRadius: BorderRadius.circular(12),
+      onTap: onTap,
+      child: Padding(
+        padding: EdgeInsets.all(12),
+        child: Column(
+          children: [
+            Icon(
+              currentIcon,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            SizedBox(height: 2),
+            Text(
+              widget.label,
+              style: TextStyle(
                 color: Theme.of(context).colorScheme.primary,
               ),
-              SizedBox(height: 2),
-              Text(
-                widget.label,
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
-      );
-    } else {
-      return InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: onTap,
-        child: Padding(
-          padding: EdgeInsets.all(12),
-          child: Column(
-            children: [
-              Icon(
-                widget.activeIcon,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              SizedBox(height: 2),
-              Text(
-                widget.label,
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
+      ),
+    );
   }
 }
 
