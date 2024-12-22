@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:maps_launcher/maps_launcher.dart';
 
 class DetailView extends StatelessWidget {
   const DetailView({super.key});
@@ -89,6 +90,11 @@ class DetailViewBody extends StatelessWidget {
                   DetailViewActionButton(
                     icon: Icons.location_on_outlined,
                     label: 'Open Maps',
+                    onTap: () {
+                      MapsLauncher.launchQuery(
+                        'Aptech Computer Education North Karachi Center',
+                      );
+                    },
                   ),
                   DetailViewActionButton(
                     icon: Icons.star_outline,
@@ -147,11 +153,14 @@ class DetailViewActionButton extends StatefulWidget {
     required this.icon,
     this.activeIcon,
     required this.label,
+    this.onTap,
   });
 
   final IconData icon;
   final IconData? activeIcon;
   final String label;
+
+  final VoidCallback? onTap;
 
   @override
   State<DetailViewActionButton> createState() => _DetailViewActionButtonState();
@@ -166,7 +175,9 @@ class _DetailViewActionButtonState extends State<DetailViewActionButton> {
     super.initState();
     currentIcon ??= widget.icon;
   }
+
   void onTap() {
+    if (widget.onTap != null) widget.onTap!();
     setState(
       () {
         if (widget.activeIcon != null) {
