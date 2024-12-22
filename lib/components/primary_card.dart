@@ -1,3 +1,4 @@
+import 'package:citiguide_user/view/detail_view.dart';
 import 'package:flutter/material.dart';
 
 class PrimaryCard extends StatelessWidget {
@@ -12,13 +13,20 @@ class PrimaryCard extends StatelessWidget {
   final double? height;
   final double? width;
 
+  void onTap(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => DetailView()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: height,
       width: width,
       child: InkWell(
-        onTap: () {},
+        onTap: () => onTap(context),
         borderRadius: BorderRadius.circular(16),
         child: Padding(
           padding: const EdgeInsets.all(6),
