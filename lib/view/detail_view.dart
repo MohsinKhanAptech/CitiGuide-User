@@ -1,4 +1,8 @@
+import 'package:citiguide_user/view/map_view.dart';
+
 import 'package:flutter/material.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 
 class DetailView extends StatelessWidget {
@@ -28,8 +32,13 @@ class DetailViewAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions: [
         PopupMenuButton(
           itemBuilder: (BuildContext context) => [
-            const PopupMenuItem(
-              child: Text('menu option'),
+            PopupMenuItem(
+              child: Text('Open in google maps'),
+              onTap: () {
+                MapsLauncher.launchQuery(
+                  'Aptech Computer Education North Karachi Center',
+                );
+              },
             ),
           ],
         ),
@@ -46,14 +55,15 @@ class DetailViewBody extends StatelessWidget {
     return ListView(
       children: [
         Container(
-          height: 250,
+          height: 300,
           color: Colors.grey.shade400,
           child: Center(
             child: Text('Location image'),
           ),
         ),
+        SizedBox(height: 24),
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Column(
             children: [
               Row(
@@ -78,69 +88,86 @@ class DetailViewBody extends StatelessWidget {
                   ),
                 ],
               ),
-              SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  DetailViewActionButton(
-                    icon: Icons.favorite_outline,
-                    activeIcon: Icons.favorite,
-                    label: 'Favorite',
-                  ),
-                  DetailViewActionButton(
-                    icon: Icons.location_on_outlined,
-                    label: 'Open Maps',
-                    onTap: () {
-                      MapsLauncher.launchQuery(
-                        'Aptech Computer Education North Karachi Center',
-                      );
-                    },
-                  ),
-                  DetailViewActionButton(
-                    icon: Icons.star_outline,
-                    activeIcon: Icons.star,
-                    label: 'Reviews',
-                  ),
-                  DetailViewActionButton(
-                    icon: Icons.report_outlined,
-                    activeIcon: Icons.report,
-                    label: 'Report',
-                  ),
-                ],
-              ),
-              SizedBox(height: 12),
-              Container(
-                height: 250,
-                margin: EdgeInsets.symmetric(vertical: 12),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade400,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Center(
-                  child: Text('Location in map'),
-                ),
-              ),
+              SizedBox(height: 24),
+              DetailViewActionButtonContainer(),
               SizedBox(height: 12),
               Divider(),
               SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Reviews',
-                    style: TextStyle(fontSize: 24),
-                  ),
-                  Row(
-                    children: [
-                      for (var i = 0; i < 5; i++) Icon(Icons.star_rounded),
-                    ],
-                  ),
-                ],
+              DetailViewMapPreview(),
+              SizedBox(height: 12),
+              Divider(),
+              SizedBox(height: 12),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Reviews',
+                      style: TextStyle(fontSize: 24),
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text('5.0', style: TextStyle(fontSize: 18)),
+                        SizedBox(width: 4),
+                        for (var i = 0; i < 5; i++) Icon(Icons.star_rounded),
+                      ],
+                    ),
+                  ],
+                ),
               ),
               SizedBox(height: 12),
-              for (var i = 0; i < 5; i++) ReviewCard(),
+              for (var i = 0; i < 5; i++)
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ReviewCard(),
+                ),
             ],
           ),
+        ),
+      ],
+    );
+  }
+}
+
+class DetailViewActionButtonContainer extends StatelessWidget {
+  const DetailViewActionButtonContainer({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        DetailViewActionButton(
+          icon: Icons.favorite_outline,
+          activeIcon: Icons.favorite,
+          label: 'Favorite',
+        ),
+        DetailViewActionButton(
+          icon: Icons.location_on_outlined,
+          label: 'Map',
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => MapView()),
+            );
+          },
+        ),
+        DetailViewActionButton(
+          icon: Icons.directions_outlined,
+          label: 'Directions',
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => MapView()),
+            );
+          },
+        ),
+        DetailViewActionButton(
+          icon: Icons.star_outline,
+          label: 'Reviews',
         ),
       ],
     );
@@ -199,21 +226,66 @@ class _DetailViewActionButtonState extends State<DetailViewActionButton> {
       onTap: onTap,
       child: Padding(
         padding: EdgeInsets.all(12),
-        child: Column(
-          children: [
-            Icon(
-              currentIcon,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            SizedBox(height: 2),
-            Text(
-              widget.label,
-              style: TextStyle(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minWidth: 50, minHeight: 50),
+          child: Column(
+            children: [
+              Icon(
+                currentIcon,
                 color: Theme.of(context).colorScheme.primary,
               ),
-            ),
-          ],
+              SizedBox(height: 2),
+              Text(
+                widget.label,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+            ],
+          ),
         ),
+      ),
+    );
+  }
+}
+
+class DetailViewMapPreview extends StatelessWidget {
+  const DetailViewMapPreview({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 250,
+      child: FlutterMap(
+        options: MapOptions(
+          initialCenter: const LatLng(24.982172028874995, 67.06525296794702),
+          initialZoom: 18,
+          minZoom: 16,
+          maxZoom: 20,
+          onTap: (tapPosition, latLng) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => MapView()),
+            );
+          },
+        ),
+        children: [
+          TileLayer(
+            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+          ),
+          MarkerLayer(markers: [
+            Marker(
+              point: LatLng(24.982172028874995, 67.06525296794702),
+              rotate: true,
+              alignment: Alignment(0, -1),
+              child: Icon(
+                Icons.location_on,
+                color: Theme.of(context).colorScheme.primary,
+                size: 32,
+              ),
+            ),
+          ])
+        ],
       ),
     );
   }

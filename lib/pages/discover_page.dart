@@ -8,7 +8,7 @@ class DiscoverPageAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: const Text("CitiGuide"),
+      title: const Text('CitiGuide'),
       actions: [
         PopupMenuButton(
           itemBuilder: (BuildContext context) => [
