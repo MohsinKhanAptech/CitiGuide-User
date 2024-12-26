@@ -41,49 +41,49 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBODcYUfTnNPkNvDhalkF-hJoTjqlLXup8',
-    appId: '1:939090159514:web:7ce03700e6536cf8f87c23',
-    messagingSenderId: '939090159514',
-    projectId: 'citiguide-f8f31',
-    authDomain: 'citiguide-f8f31.firebaseapp.com',
-    storageBucket: 'citiguide-f8f31.firebasestorage.app',
-    measurementId: 'G-C3R02GPLQ0',
+    apiKey: 'AIzaSyAtv0kRkUuROZqd9QbKXReH7Ctq3_slFSE',
+    appId: '1:910378647353:web:b2d3c7a91a61b048dab2e8',
+    messagingSenderId: '910378647353',
+    projectId: 'citiguide-18df9',
+    authDomain: 'citiguide-18df9.firebaseapp.com',
+    storageBucket: 'citiguide-18df9.firebasestorage.app',
+    measurementId: 'G-60EG42N2VB',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAnbNbiRIKRCYMQD5KpZzmMcKDBFlDIAJE',
-    appId: '1:939090159514:android:20d0afe4691f5f4bf87c23',
-    messagingSenderId: '939090159514',
-    projectId: 'citiguide-f8f31',
-    storageBucket: 'citiguide-f8f31.firebasestorage.app',
+    apiKey: 'AIzaSyBy0EXh1lfVRqSb7ududAwIR0Jq7F8EJvI',
+    appId: '1:910378647353:android:a87ba7972265de30dab2e8',
+    messagingSenderId: '910378647353',
+    projectId: 'citiguide-18df9',
+    storageBucket: 'citiguide-18df9.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCfYwiGG26z7wYz1wCiywhPl1zn9tgZzmY',
-    appId: '1:939090159514:ios:fc1c6ebb584337ddf87c23',
-    messagingSenderId: '939090159514',
-    projectId: 'citiguide-f8f31',
-    storageBucket: 'citiguide-f8f31.firebasestorage.app',
+    apiKey: 'AIzaSyCbdDRfYW01xulZClT6pUEgqPyDnufo86U',
+    appId: '1:910378647353:ios:aa81a9e3987c1fc2dab2e8',
+    messagingSenderId: '910378647353',
+    projectId: 'citiguide-18df9',
+    storageBucket: 'citiguide-18df9.firebasestorage.app',
     iosBundleId: 'com.example.citiguideUser',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyCfYwiGG26z7wYz1wCiywhPl1zn9tgZzmY',
-    appId: '1:939090159514:ios:fc1c6ebb584337ddf87c23',
-    messagingSenderId: '939090159514',
-    projectId: 'citiguide-f8f31',
-    storageBucket: 'citiguide-f8f31.firebasestorage.app',
+    apiKey: 'AIzaSyCbdDRfYW01xulZClT6pUEgqPyDnufo86U',
+    appId: '1:910378647353:ios:aa81a9e3987c1fc2dab2e8',
+    messagingSenderId: '910378647353',
+    projectId: 'citiguide-18df9',
+    storageBucket: 'citiguide-18df9.firebasestorage.app',
     iosBundleId: 'com.example.citiguideUser',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyBODcYUfTnNPkNvDhalkF-hJoTjqlLXup8',
-    appId: '1:939090159514:web:050e74c4bb43c88ef87c23',
-    messagingSenderId: '939090159514',
-    projectId: 'citiguide-f8f31',
-    authDomain: 'citiguide-f8f31.firebaseapp.com',
-    storageBucket: 'citiguide-f8f31.firebasestorage.app',
-    measurementId: 'G-H4MNBJ9GN8',
+    apiKey: 'AIzaSyAtv0kRkUuROZqd9QbKXReH7Ctq3_slFSE',
+    appId: '1:910378647353:web:c4b2bd0b53a1f6cedab2e8',
+    messagingSenderId: '910378647353',
+    projectId: 'citiguide-18df9',
+    authDomain: 'citiguide-18df9.firebaseapp.com',
+    storageBucket: 'citiguide-18df9.firebasestorage.app',
+    measurementId: 'G-2TC1Z97P37',
   );
 
 }
