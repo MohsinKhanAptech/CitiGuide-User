@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 
 class MapView extends StatelessWidget {
   const MapView({super.key});
@@ -48,16 +49,11 @@ class MapViewBody extends StatelessWidget {
       options: MapOptions(
         initialCenter: const LatLng(24.982172028874995, 67.06525296794702),
         initialZoom: 18,
-        onTap: (tapPosition, latLng) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => MapView()),
-          );
-        },
       ),
       children: [
         TileLayer(
           urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+          tileProvider: CancellableNetworkTileProvider(),
         ),
         MarkerLayer(
           markers: [

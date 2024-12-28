@@ -1,5 +1,6 @@
 import 'package:citiguide_user/utils/constants.dart';
 import 'package:citiguide_user/view/main_view.dart';
+import 'package:citiguide_user/view/splash_view.dart';
 
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -26,7 +27,20 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MainView(),
+      home: Home(),
     );
+  }
+}
+
+class Home extends StatelessWidget {
+  const Home({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    if (selectedCity == null) {
+      return SplashView();
+    } else {
+      return MainView();
+    }
   }
 }

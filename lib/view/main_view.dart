@@ -79,7 +79,6 @@ class NavigationBarHandler extends StatelessWidget {
   final int selectedIndex;
   final Function onDestinationSelected;
 
-  // TODO: if there is time change these icons to animated ones.
   @override
   Widget build(BuildContext context) {
     return NavigationBar(
@@ -99,7 +98,7 @@ class NavigationBarHandler extends StatelessWidget {
         NavigationDestination(
           icon: Icon(Icons.more_horiz_outlined),
           selectedIcon: Icon(Icons.more_horiz),
-          label: 'More',
+          label: 'Options',
         ),
       ],
     );
