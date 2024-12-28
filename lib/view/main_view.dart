@@ -14,6 +14,7 @@ class MainView extends StatefulWidget {
 
 class _MainViewState extends State<MainView> {
   int selectedIndex = 0;
+  bool canExit = false;
 
   void onDestinationSelected(value) {
     setState(() => selectedIndex = value);
@@ -21,17 +22,39 @@ class _MainViewState extends State<MainView> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBarHandler(
-          selectedIndex: selectedIndex,
-        ),
-        body: BodyHandler(
-          selectedIndex: selectedIndex,
-        ),
-        bottomNavigationBar: NavigationBarHandler(
-          selectedIndex: selectedIndex,
-          onDestinationSelected: onDestinationSelected,
+    return PopScope(
+      canPop: canExit,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          setState(() {
+            if (selectedIndex == 0) {
+              canExit = true;
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Center(child: Text('Press again to exit')),
+                  duration: Duration(seconds: 1),
+                ),
+              );
+            }
+            selectedIndex = 0;
+          });
+          Future.delayed(Duration(seconds: 1), () {
+            setState(() => canExit = false);
+          });
+        }
+      },
+      child: SafeArea(
+        child: Scaffold(
+          appBar: AppBarHandler(
+            selectedIndex: selectedIndex,
+          ),
+          body: BodyHandler(
+            selectedIndex: selectedIndex,
+          ),
+          bottomNavigationBar: NavigationBarHandler(
+            selectedIndex: selectedIndex,
+            onDestinationSelected: onDestinationSelected,
+          ),
         ),
       ),
     );
