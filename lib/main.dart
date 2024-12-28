@@ -1,3 +1,4 @@
+import 'package:citiguide_user/utils/constants.dart';
 import 'package:citiguide_user/view/main_view.dart';
 
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(const MyApp());
+  await initConstants();
 }
 
 class MyApp extends StatelessWidget {

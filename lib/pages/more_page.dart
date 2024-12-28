@@ -1,3 +1,5 @@
+import 'package:citiguide_user/view/settings_view.dart';
+
 import 'package:flutter/material.dart';
 
 class MorePageAppBar extends StatelessWidget {
@@ -43,58 +45,78 @@ class MorePageBody extends StatelessWidget {
             ),
           ),
           const Divider(),
-          InkWell(
-            onTap: () {},
-            child: const ListTile(
-              leading: Icon(Icons.star),
-              title: Text('Your Reviews'),
-            ),
+          moreTile(
+            settingsPage: 0,
+            icon: Icons.language,
+            title: 'Change Region',
           ),
-          InkWell(
-            onTap: () {},
-            child: const ListTile(
-              leading: Icon(Icons.attach_money),
-              title: Text('Currency'),
-            ),
+          moreTile(
+            settingsPage: 0,
+            icon: Icons.star,
+            title: 'Your Reviews',
           ),
-          InkWell(
-            onTap: () {},
-            child: const ListTile(
-              leading: Icon(Icons.style),
-              title: Text('Layout'),
-            ),
+          moreTile(
+            settingsPage: 0,
+            icon: Icons.attach_money,
+            title: 'Currency',
           ),
-          InkWell(
-            onTap: () {},
-            child: const ListTile(
-              leading: Icon(Icons.auto_graph),
-              title: Text('Statistics'),
-            ),
+          moreTile(
+            settingsPage: 0,
+            icon: Icons.style,
+            title: 'Layout',
+          ),
+          moreTile(
+            settingsPage: 0,
+            icon: Icons.auto_graph,
+            title: 'Statistics',
           ),
           const Divider(),
-          InkWell(
-            onTap: () {},
-            child: const ListTile(
-              leading: Icon(Icons.settings),
-              title: Text('Settings'),
-            ),
+          moreTile(
+            settingsPage: 0,
+            icon: Icons.settings,
+            title: 'Settings',
           ),
-          InkWell(
-            onTap: () {},
-            child: const ListTile(
-              leading: Icon(Icons.info),
-              title: Text('About'),
-            ),
+          moreTile(
+            settingsPage: 0,
+            icon: Icons.info,
+            title: 'About',
           ),
-          InkWell(
-            onTap: () {},
-            child: const ListTile(
-              leading: Icon(Icons.help),
-              title: Text('Help'),
-            ),
+          moreTile(
+            settingsPage: 0,
+            icon: Icons.help,
+            title: 'Help',
           ),
         ],
       ),
+    );
+  }
+}
+
+class moreTile extends StatelessWidget {
+  const moreTile({
+    super.key,
+    required this.settingsPage,
+    required this.icon,
+    required this.title,
+  });
+
+  final int settingsPage;
+  final IconData icon;
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SettingsView(page: settingsPage),
+          ),
+        );
+      },
+      leading: Icon(icon),
+      title: Text(title),
     );
   }
 }
