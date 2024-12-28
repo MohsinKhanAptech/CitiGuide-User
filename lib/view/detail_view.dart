@@ -1,4 +1,5 @@
 import 'package:citiguide_user/view/map_view.dart';
+import 'package:citiguide_user/view/review_view.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
@@ -125,6 +126,28 @@ class DetailViewBody extends StatelessWidget {
                   padding: const EdgeInsets.all(8.0),
                   child: ReviewCard(),
                 ),
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ReviewView()),
+                  );
+                },
+                borderRadius: BorderRadius.circular(12),
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    child: Text(
+                      'View More',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
