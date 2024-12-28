@@ -5,13 +5,6 @@ Cities? selectedCity;
 
 Future<void> initConstants() async {
   prefs = await SharedPreferences.getInstance();
-  await getSelectedCity();
-}
-
-Future<void> getSelectedCity() async {
-  selectedCity = Cities.values.firstWhere(
-    (c) => c.name == prefs.getString('city'),
-  );
 }
 
 enum Cities {

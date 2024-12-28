@@ -1,6 +1,6 @@
-import 'package:citiguide_user/pages/discover_page.dart';
-import 'package:citiguide_user/pages/search_page.dart';
-import 'package:citiguide_user/pages/more_page.dart';
+import 'package:citiguide_user/pages/main_view_pages/discover_page.dart';
+import 'package:citiguide_user/pages/main_view_pages/search_page.dart';
+import 'package:citiguide_user/pages/main_view_pages/more_page.dart';
 
 import 'package:flutter/material.dart';
 

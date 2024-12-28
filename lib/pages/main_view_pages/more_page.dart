@@ -45,43 +45,43 @@ class MorePageBody extends StatelessWidget {
             ),
           ),
           const Divider(),
-          moreTile(
+          MoreTile(
             settingsPage: 0,
             icon: Icons.language,
             title: 'Change Region',
           ),
-          moreTile(
+          MoreTile(
             settingsPage: 0,
             icon: Icons.star,
             title: 'Your Reviews',
           ),
-          moreTile(
+          MoreTile(
             settingsPage: 0,
             icon: Icons.attach_money,
             title: 'Currency',
           ),
-          moreTile(
+          MoreTile(
             settingsPage: 0,
             icon: Icons.style,
             title: 'Layout',
           ),
-          moreTile(
+          MoreTile(
             settingsPage: 0,
             icon: Icons.auto_graph,
             title: 'Statistics',
           ),
           const Divider(),
-          moreTile(
+          MoreTile(
             settingsPage: 0,
             icon: Icons.settings,
             title: 'Settings',
           ),
-          moreTile(
+          MoreTile(
             settingsPage: 0,
             icon: Icons.info,
             title: 'About',
           ),
-          moreTile(
+          MoreTile(
             settingsPage: 0,
             icon: Icons.help,
             title: 'Help',
@@ -92,8 +92,8 @@ class MorePageBody extends StatelessWidget {
   }
 }
 
-class moreTile extends StatelessWidget {
-  const moreTile({
+class MoreTile extends StatelessWidget {
+  const MoreTile({
     super.key,
     required this.settingsPage,
     required this.icon,

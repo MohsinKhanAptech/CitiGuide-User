@@ -12,7 +12,6 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(const MyApp());
-  await initConstants();
 }
 
 class MyApp extends StatelessWidget {
@@ -32,8 +31,28 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   const Home({super.key});
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  Future<void> getSelectedCity() async {
+    String? city = prefs.getString('city');
+    setState(() {
+      selectedCity = Cities.values.firstWhere((c) => c.name == city);
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    initConstants().then((value) {
+      getSelectedCity();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
