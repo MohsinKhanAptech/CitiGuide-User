@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:citiguide_user/pages/main_view_pages/discover_page.dart';
 import 'package:citiguide_user/pages/main_view_pages/search_page.dart';
 import 'package:citiguide_user/pages/main_view_pages/more_page.dart';
@@ -38,7 +40,7 @@ class _MainViewState extends State<MainView> {
             }
             selectedIndex = 0;
           });
-          Future.delayed(Duration(seconds: 1), () {
+          Timer(Duration(seconds: 1), () {
             setState(() => canExit = false);
           });
         }
