@@ -14,7 +14,7 @@ class RegionSelectPage extends StatelessWidget {
     selectedCity = Cities.karachi;
 
     void onPressed() async {
-      await prefs.setString('city', selectedCity!.name.toString());
+      await prefs.setString('city', selectedCity!.name);
       if (context.mounted) {
         Navigator.pushAndRemoveUntil(
           context,
@@ -45,7 +45,7 @@ class RegionSelectPage extends StatelessWidget {
                   for (var i = 0; i < Cities.values.length; i++)
                     DropdownMenuEntry(
                       value: Cities.values[i],
-                      label: Cities.values[i].name,
+                      label: Cities.values[i].name.toTitleCase,
                     ),
                 ],
               ),
