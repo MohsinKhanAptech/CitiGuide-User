@@ -2,8 +2,8 @@ import 'package:citiguide_user/view/settings_view.dart';
 
 import 'package:flutter/material.dart';
 
-class MorePageAppBar extends StatelessWidget {
-  const MorePageAppBar({super.key});
+class OptionsPageAppBar extends StatelessWidget {
+  const OptionsPageAppBar({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -11,8 +11,8 @@ class MorePageAppBar extends StatelessWidget {
   }
 }
 
-class MorePageBody extends StatelessWidget {
-  const MorePageBody({super.key});
+class OptionsPageBody extends StatelessWidget {
+  const OptionsPageBody({super.key});
 
   @override
   Widget build(BuildContext context) {

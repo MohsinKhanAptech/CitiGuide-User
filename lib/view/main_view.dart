@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:citiguide_user/pages/main_view_pages/discover_page.dart';
 import 'package:citiguide_user/pages/main_view_pages/search_page.dart';
-import 'package:citiguide_user/pages/main_view_pages/more_page.dart';
+import 'package:citiguide_user/pages/main_view_pages/options_page.dart';
 
 import 'package:flutter/material.dart';
 
@@ -75,7 +75,7 @@ class AppBarHandler extends StatelessWidget implements PreferredSizeWidget {
     return const [
       DiscoverPageAppBar(),
       SearchPageAppBar(),
-      MorePageAppBar(),
+      OptionsPageAppBar(),
     ][selectedIndex];
   }
 }
@@ -89,7 +89,7 @@ class BodyHandler extends StatelessWidget {
     return const [
       DiscoverPageBody(),
       SearchPageBody(),
-      MorePageBody(),
+      OptionsPageBody(),
     ][selectedIndex];
   }
 }
