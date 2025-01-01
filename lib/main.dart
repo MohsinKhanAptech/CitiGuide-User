@@ -72,10 +72,11 @@ class _HomeState extends State<Home> {
                 content: Center(
                   child: Text('internet unavailable, please reconnect.'),
                 ),
+                duration: Duration(milliseconds: 4500),
               ),
             );
           }
-          waitForReconnect = Timer(Duration(seconds: 5), () {
+          waitForReconnect = Timer(Duration(milliseconds: 5000), () {
             setState(() => internetAvailable = false);
           });
         }
