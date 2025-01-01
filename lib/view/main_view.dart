@@ -34,13 +34,13 @@ class _MainViewState extends State<MainView> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Center(child: Text('Press again to exit')),
-                  duration: Duration(seconds: 1),
+                  duration: Duration(milliseconds: 1500),
                 ),
               );
             }
             selectedIndex = 0;
           });
-          Timer(Duration(seconds: 1), () {
+          Timer(Duration(milliseconds: 1500), () {
             setState(() => canExit = false);
           });
         }
