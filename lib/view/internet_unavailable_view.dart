@@ -35,6 +35,8 @@ class _InternetUnavailableViewState extends State<InternetUnavailableView> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Icon(Icons.wifi_off_rounded, size: 64),
+              SizedBox(height: 12),
               Text(
                 'Internet Unavailable',
                 style: TextStyle(
