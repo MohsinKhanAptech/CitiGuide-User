@@ -9,9 +9,8 @@ class WelcomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(height: 12),
           Column(
             children: [
               const Text(
@@ -25,14 +24,11 @@ class WelcomePage extends StatelessWidget {
                 'Your travel companion',
                 style: TextStyle(fontSize: 16),
               ),
-            ],
-          ),
-          Column(
-            children: [
-              TextButton(
+              const SizedBox(height: 18),
+              ElevatedButton(
                 onPressed: incrementPage,
                 style: const ButtonStyle(
-                  padding: WidgetStatePropertyAll(EdgeInsets.all(24)),
+                  padding: WidgetStatePropertyAll(EdgeInsets.all(18)),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -43,7 +39,6 @@ class WelcomePage extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(height: 12),
             ],
           ),
         ],
