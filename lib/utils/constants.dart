@@ -1,18 +1,22 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 late SharedPreferences prefs;
 final connectionChecker = InternetConnectionChecker.instance;
-Cities? selectedCity;
+Set<String> cities = {};
+String? selectedCity;
+
+FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+
+CollectionReference locations = firebaseFirestore.collection('locations');
 
 Future<void> initConstants() async {
   prefs = await SharedPreferences.getInstance();
-}
-
-enum Cities {
-  karachi,
-  lahore,
-  islamabad,
+  QuerySnapshot<Object?> locationsSnap = await locations.get();
+  for (var doc in locationsSnap.docs) {
+    cities.add(doc.id);
+  }
 }
 
 extension StringCasingExtension on String {

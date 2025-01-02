@@ -50,7 +50,7 @@ class _HomeState extends State<Home> {
   Future<void> getSelectedCity() async {
     String? city = prefs.getString('city');
     setState(() {
-      selectedCity = Cities.values.firstWhere((c) => c.name == city);
+      selectedCity = cities.lookup(city);
     });
   }
 

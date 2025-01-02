@@ -8,7 +8,7 @@ class ChangeRegionPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     void onPressed() {
-      prefs.setString('city', selectedCity!.name);
+      prefs.setString('city', selectedCity!);
       Navigator.pop(context);
     }
 
@@ -26,16 +26,15 @@ class ChangeRegionPage extends StatelessWidget {
               ),
               SizedBox(height: 12),
               DropdownMenu(
+                width: 160,
                 label: Text('City'),
-                onSelected: (value) {
-                  value != null ? selectedCity = value : null;
-                },
+                onSelected: (String? value) => selectedCity = value,
                 initialSelection: selectedCity,
                 dropdownMenuEntries: [
-                  for (var i = 0; i < Cities.values.length; i++)
+                  for (var i = 0; i < cities.length; i++)
                     DropdownMenuEntry(
-                      value: Cities.values[i],
-                      label: Cities.values[i].name.toTitleCase,
+                      value: cities.elementAt(i),
+                      label: cities.elementAt(i).toTitleCase,
                     ),
                 ],
               ),
