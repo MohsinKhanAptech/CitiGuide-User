@@ -1,24 +1,31 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 
 class MapView extends StatelessWidget {
-  const MapView({super.key});
+  const MapView({super.key, required this.documentSnapshot});
+  final DocumentSnapshot documentSnapshot;
 
   @override
   Widget build(BuildContext context) {
+    final String locationName = documentSnapshot.get('name');
+    final double locationLat = documentSnapshot.get('latitude');
+    final double locationLng = documentSnapshot.get('longitude');
+
     return SafeArea(
       child: Scaffold(
-        appBar: MapViewAppBar(),
-        body: MapViewBody(),
+        appBar: MapViewAppBar(locationName: locationName),
+        body: MapViewBody(locationLat: locationLat, locationLng: locationLng),
       ),
     );
   }
 }
 
 class MapViewAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const MapViewAppBar({super.key});
+  const MapViewAppBar({super.key, required this.locationName});
+  final String locationName;
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -26,7 +33,7 @@ class MapViewAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: Text('Map'),
+      title: Text(locationName),
       actions: [
         PopupMenuButton(
           itemBuilder: (BuildContext context) => [
@@ -41,13 +48,19 @@ class MapViewAppBar extends StatelessWidget implements PreferredSizeWidget {
 }
 
 class MapViewBody extends StatelessWidget {
-  const MapViewBody({super.key});
+  const MapViewBody({
+    super.key,
+    required this.locationLat,
+    required this.locationLng,
+  });
+  final double locationLat;
+  final double locationLng;
 
   @override
   Widget build(BuildContext context) {
     return FlutterMap(
       options: MapOptions(
-        initialCenter: const LatLng(24.982172028874995, 67.06525296794702),
+        initialCenter: LatLng(locationLat, locationLng),
         initialZoom: 18,
       ),
       children: [
@@ -58,7 +71,7 @@ class MapViewBody extends StatelessWidget {
         MarkerLayer(
           markers: [
             Marker(
-              point: LatLng(24.982172028874995, 67.06525296794702),
+              point: LatLng(locationLat, locationLng),
               rotate: true,
               alignment: Alignment(0, -1),
               child: Icon(

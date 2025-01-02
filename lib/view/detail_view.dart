@@ -1,45 +1,86 @@
+import 'package:citiguide_user/utils/constants.dart';
 import 'package:citiguide_user/view/map_view.dart';
 import 'package:citiguide_user/view/review_view.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 import 'package:maps_launcher/maps_launcher.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class DetailView extends StatelessWidget {
-  const DetailView({super.key});
+class DetailView extends StatefulWidget {
+  const DetailView({
+    super.key,
+    required this.category,
+    required this.locationID,
+  });
+
+  final String category;
+  final String locationID;
+
+  @override
+  State<DetailView> createState() => _DetailViewState();
+}
+
+class _DetailViewState extends State<DetailView> {
+  bool loading = true;
+  late DocumentSnapshot documentSnapshot;
+
+  Future<void> getData() async {
+    documentSnapshot = await locations
+        .doc(selectedCity)
+        .collection(widget.category)
+        .doc(widget.locationID)
+        .get();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getData().then((value) => setState(() => loading = false));
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (loading) {
+      return SafeArea(
+        child: Scaffold(
+          body: Center(
+            child: CircularProgressIndicator(),
+          ),
+        ),
+      );
+    }
     return SafeArea(
       child: Scaffold(
-        appBar: DetailViewAppBar(),
-        body: DetailViewBody(),
+        appBar: DetailViewAppBar(documentSnapshot: documentSnapshot),
+        body: DetailViewBody(documentSnapshot: documentSnapshot),
       ),
     );
   }
 }
 
 class DetailViewAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const DetailViewAppBar({super.key});
+  const DetailViewAppBar({super.key, required this.documentSnapshot});
+  final DocumentSnapshot documentSnapshot;
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 
   @override
   Widget build(BuildContext context) {
+    final String locationName = documentSnapshot.get('name');
+
     return AppBar(
-      title: Text('Location Detail'),
+      title: Text(locationName),
       actions: [
         PopupMenuButton(
           itemBuilder: (BuildContext context) => [
             PopupMenuItem(
               child: Text('Open in google maps'),
               onTap: () {
-                MapsLauncher.launchQuery(
-                  'Aptech Computer Education North Karachi Center',
-                );
+                MapsLauncher.launchQuery(locationName);
               },
             ),
           ],
@@ -50,10 +91,15 @@ class DetailViewAppBar extends StatelessWidget implements PreferredSizeWidget {
 }
 
 class DetailViewBody extends StatelessWidget {
-  const DetailViewBody({super.key});
+  const DetailViewBody({super.key, required this.documentSnapshot});
+  final DocumentSnapshot documentSnapshot;
 
   @override
   Widget build(BuildContext context) {
+    String locationName = documentSnapshot.get('name');
+    String locationDescription = documentSnapshot.get('description');
+    double locationRating = documentSnapshot.get('rating');
+
     return ListView(
       children: [
         Container(
@@ -72,7 +118,7 @@ class DetailViewBody extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Location Name',
+                    locationName,
                     style: TextStyle(
                       fontSize: 24,
                     ),
@@ -83,7 +129,7 @@ class DetailViewBody extends StatelessWidget {
               Row(
                 children: [
                   Text(
-                    'Location description',
+                    locationDescription,
                     style: TextStyle(
                       fontSize: 18,
                     ),
@@ -91,11 +137,13 @@ class DetailViewBody extends StatelessWidget {
                 ],
               ),
               SizedBox(height: 24),
-              DetailViewActionButtonContainer(),
+              DetailViewActionButtonContainer(
+                documentSnapshot: documentSnapshot,
+              ),
               SizedBox(height: 12),
               Divider(),
               SizedBox(height: 12),
-              DetailViewMapPreview(),
+              DetailViewMapPreview(documentSnapshot: documentSnapshot),
               SizedBox(height: 12),
               Divider(),
               SizedBox(height: 12),
@@ -112,7 +160,8 @@ class DetailViewBody extends StatelessWidget {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text('5.0', style: TextStyle(fontSize: 18)),
+                        Text(locationRating.toStringAsFixed(1),
+                            style: TextStyle(fontSize: 18)),
                         SizedBox(width: 4),
                         for (var i = 0; i < 5; i++) Icon(Icons.star_rounded),
                       ],
@@ -157,7 +206,12 @@ class DetailViewBody extends StatelessWidget {
 }
 
 class DetailViewActionButtonContainer extends StatelessWidget {
-  const DetailViewActionButtonContainer({super.key});
+  const DetailViewActionButtonContainer({
+    super.key,
+    required this.documentSnapshot,
+  });
+
+  final DocumentSnapshot documentSnapshot;
 
   @override
   Widget build(BuildContext context) {
@@ -175,7 +229,11 @@ class DetailViewActionButtonContainer extends StatelessWidget {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => MapView()),
+              MaterialPageRoute(
+                builder: (context) {
+                  return MapView(documentSnapshot: documentSnapshot);
+                },
+              ),
             );
           },
         ),
@@ -185,13 +243,23 @@ class DetailViewActionButtonContainer extends StatelessWidget {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => MapView()),
+              MaterialPageRoute(
+                builder: (context) {
+                  return MapView(documentSnapshot: documentSnapshot);
+                },
+              ),
             );
           },
         ),
         DetailViewActionButton(
           icon: Icons.star_outline,
           label: 'Reviews',
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ReviewView()),
+            );
+          },
         ),
       ],
     );
@@ -210,7 +278,6 @@ class DetailViewActionButton extends StatefulWidget {
   final IconData icon;
   final IconData? activeIcon;
   final String label;
-
   final VoidCallback? onTap;
 
   @override
@@ -274,22 +341,30 @@ class _DetailViewActionButtonState extends State<DetailViewActionButton> {
 }
 
 class DetailViewMapPreview extends StatelessWidget {
-  const DetailViewMapPreview({super.key});
+  const DetailViewMapPreview({super.key, required this.documentSnapshot});
+  final DocumentSnapshot documentSnapshot;
 
   @override
   Widget build(BuildContext context) {
+    final double locationLat = documentSnapshot.get('latitude');
+    final double locationLng = documentSnapshot.get('longitude');
+
     return SizedBox(
       height: 250,
       child: FlutterMap(
         options: MapOptions(
-          initialCenter: const LatLng(24.982172028874995, 67.06525296794702),
+          initialCenter: LatLng(locationLat, locationLng),
           initialZoom: 18,
           minZoom: 16,
           maxZoom: 20,
           onTap: (tapPosition, latLng) {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => MapView()),
+              MaterialPageRoute(
+                builder: (context) {
+                  return MapView(documentSnapshot: documentSnapshot);
+                },
+              ),
             );
           },
         ),
@@ -300,7 +375,7 @@ class DetailViewMapPreview extends StatelessWidget {
           ),
           MarkerLayer(markers: [
             Marker(
-              point: LatLng(24.982172028874995, 67.06525296794702),
+              point: LatLng(locationLat, locationLng),
               rotate: true,
               alignment: Alignment(0, -1),
               child: Icon(

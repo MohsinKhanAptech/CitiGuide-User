@@ -1,15 +1,38 @@
 import 'package:citiguide_user/components/primary_card.dart';
+import 'package:citiguide_user/utils/constants.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:flutter/material.dart';
 
-class CardRow extends StatelessWidget {
-  const CardRow({super.key, required this.title});
+class CardRow extends StatefulWidget {
+  const CardRow({super.key, required this.title, required this.category});
 
   final String title;
+  final String category;
+
+  @override
+  State<CardRow> createState() => _CardRowState();
+}
+
+class _CardRowState extends State<CardRow> {
+  bool loading = true;
+  late QuerySnapshot<Object?> querySnapshot;
+
+  Future<void> getData() async {
+    querySnapshot =
+        await locations.doc(selectedCity).collection(widget.category).get();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getData().then((value) => setState(() => loading = false));
+  }
 
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -17,7 +40,7 @@ class CardRow extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               child: Text(
-                title,
+                widget.title,
                 style: const TextStyle(
                   fontSize: 20,
                 ),
@@ -25,23 +48,34 @@ class CardRow extends StatelessWidget {
             ),
             TextButton(
               onPressed: () {},
-              child: const Text(
-                'see more >',
-              ),
+              child: const Text('see more >'),
             ),
           ],
         ),
-        SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              for (var i = 0; i < 10; i++)
-                const PrimaryCard(width: 200, bookName: 'Location name'),
-            ],
+        if (loading)
+          SizedBox(
+            height: 180,
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          )
+        else
+          SizedBox(
+            height: 180,
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              scrollDirection: Axis.horizontal,
+              itemCount: querySnapshot.size,
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                return PrimaryCard(
+                  width: 200,
+                  title: querySnapshot.docs[index].get('name'),
+                  category: widget.category,
+                );
+              },
+            ),
           ),
-        ),
       ],
     );
   }
