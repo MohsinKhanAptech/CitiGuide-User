@@ -13,11 +13,11 @@ class DetailView extends StatefulWidget {
   const DetailView({
     super.key,
     required this.category,
-    required this.locationID,
+    required this.locationName,
   });
 
   final String category;
-  final String locationID;
+  final String locationName;
 
   @override
   State<DetailView> createState() => _DetailViewState();
@@ -28,10 +28,12 @@ class _DetailViewState extends State<DetailView> {
   late DocumentSnapshot documentSnapshot;
 
   Future<void> getData() async {
-    documentSnapshot = await locations
+    documentSnapshot = await citiesRef
         .doc(selectedCity)
-        .collection(widget.category)
-        .doc(widget.locationID)
+        .collection('categories')
+        .doc(widget.category)
+        .collection('locations')
+        .doc(widget.locationName)
         .get();
   }
 
@@ -346,14 +348,16 @@ class DetailViewMapPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double locationLat = documentSnapshot.get('latitude');
-    final double locationLng = documentSnapshot.get('longitude');
+    final GeoPoint locationGeoPoint = documentSnapshot.get('geopoint');
 
     return SizedBox(
       height: 250,
       child: FlutterMap(
         options: MapOptions(
-          initialCenter: LatLng(locationLat, locationLng),
+          initialCenter: LatLng(
+            locationGeoPoint.latitude,
+            locationGeoPoint.longitude,
+          ),
           initialZoom: 18,
           minZoom: 16,
           maxZoom: 20,
@@ -375,7 +379,10 @@ class DetailViewMapPreview extends StatelessWidget {
           ),
           MarkerLayer(markers: [
             Marker(
-              point: LatLng(locationLat, locationLng),
+              point: LatLng(
+                locationGeoPoint.latitude,
+                locationGeoPoint.longitude,
+              ),
               rotate: true,
               alignment: Alignment(0, -1),
               child: Icon(

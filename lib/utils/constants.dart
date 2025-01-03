@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -7,15 +8,17 @@ final connectionChecker = InternetConnectionChecker.instance;
 Set<String> cities = {};
 String? selectedCity;
 
+FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
 
-CollectionReference locations = firebaseFirestore.collection('locations');
+CollectionReference citiesRef = firebaseFirestore.collection('cities');
+late QuerySnapshot<Object?> citiesSnap;
 
 Future<void> initConstants() async {
   prefs = await SharedPreferences.getInstance();
-  QuerySnapshot<Object?> locationsSnap = await locations.get();
-  for (var doc in locationsSnap.docs) {
-    cities.add(doc.id);
+  citiesSnap = await citiesRef.get();
+  for (var city in citiesSnap.docs) {
+    cities.add(city.get('name'));
   }
 }
 

@@ -11,13 +11,15 @@ class MapView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String locationName = documentSnapshot.get('name');
-    final double locationLat = documentSnapshot.get('latitude');
-    final double locationLng = documentSnapshot.get('longitude');
+    final GeoPoint locationGeoPoint = documentSnapshot.get('geopoint');
 
     return SafeArea(
       child: Scaffold(
         appBar: MapViewAppBar(locationName: locationName),
-        body: MapViewBody(locationLat: locationLat, locationLng: locationLng),
+        body: MapViewBody(
+          locationLat: locationGeoPoint.latitude,
+          locationLng: locationGeoPoint.longitude,
+        ),
       ),
     );
   }

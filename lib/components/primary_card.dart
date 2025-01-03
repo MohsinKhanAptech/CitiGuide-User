@@ -22,7 +22,7 @@ class PrimaryCard extends StatelessWidget {
       MaterialPageRoute(
         builder: (context) => DetailView(
           category: category,
-          locationID: title,
+          locationName: title,
         ),
       ),
     );

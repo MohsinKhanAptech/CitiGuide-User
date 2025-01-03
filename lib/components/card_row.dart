@@ -19,8 +19,12 @@ class _CardRowState extends State<CardRow> {
   late QuerySnapshot<Object?> querySnapshot;
 
   Future<void> getData() async {
-    querySnapshot =
-        await locations.doc(selectedCity).collection(widget.category).get();
+    querySnapshot = await citiesRef
+        .doc(selectedCity)
+        .collection('categories')
+        .doc(widget.category)
+        .collection('locations')
+        .get();
   }
 
   @override

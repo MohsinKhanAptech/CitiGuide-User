@@ -1,8 +1,12 @@
+import 'package:citiguide_user/utils/constants.dart';
 import 'package:citiguide_user/view/detail_view.dart';
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+// FIXME: search currently only works on 'Hotels' category of the selected city,
+// it needs to be able to search through all categories.
+// idk if it should search in cities other than the selected city.
 class SearchPageAppBar extends StatelessWidget {
   const SearchPageAppBar({super.key});
 
@@ -20,32 +24,32 @@ class SearchPageBody extends StatefulWidget {
 }
 
 class _SearchPageBodyState extends State<SearchPageBody> {
-  final TextEditingController _searchController = TextEditingController();
-  List<String> _searchResults = [];
-  bool _isLoading = false;
+  final TextEditingController searchController = TextEditingController();
+  List<String> searchResults = [];
+  bool loading = false;
 
-  Future<void> _searchItems(String query) async {
+  Future<void> searchItems(String query) async {
     setState(() {
-      _isLoading = true;
-      _searchResults.clear(); // Clear previous results
+      loading = true;
+      searchResults.clear();
     });
 
     try {
-      final CollectionReference itemsCollection =
-          FirebaseFirestore.instance.collection('locations');
+      final CollectionReference itemsCollection = FirebaseFirestore.instance
+          .collection('cities')
+          .doc(selectedCity)
+          .collection('categories')
+          .doc('Hotels')
+          .collection('locations');
 
-      // Perform a case-insensitive search using a where clause.
-      // Important: Ensure you have a composite index on the field you are querying for better performance.
-      // In Firebase console, go to "Indexes" and create one if needed.
       final QuerySnapshot snapshot = await itemsCollection
           .where('name', isGreaterThanOrEqualTo: query.toLowerCase())
-          .where('name',
-              isLessThan: '${query.toLowerCase()}z') // Efficient prefix search
+          .where('name', isLessThan: '${query.toLowerCase()}z')
           .get();
 
       if (snapshot.docs.isNotEmpty) {
         setState(() {
-          _searchResults =
+          searchResults =
               snapshot.docs.map((doc) => doc['name'] as String).toList();
         });
       }
@@ -56,9 +60,7 @@ class _SearchPageBodyState extends State<SearchPageBody> {
         );
       }
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      setState(() => loading = false);
     }
   }
 
@@ -69,15 +71,12 @@ class _SearchPageBodyState extends State<SearchPageBody> {
       child: Column(
         children: [
           TextField(
-            controller: _searchController,
+            controller: searchController,
             onChanged: (value) {
               if (value.isNotEmpty) {
-                _searchItems(value);
+                searchItems(value);
               } else {
-                setState(() {
-                  // Clear suggestions when input is empty
-                  _searchResults.clear();
-                });
+                setState(() => searchResults.clear());
               }
             },
             decoration: const InputDecoration(
@@ -86,30 +85,42 @@ class _SearchPageBodyState extends State<SearchPageBody> {
               border: OutlineInputBorder(),
             ),
           ),
-          const SizedBox(height: 20),
-          _isLoading
-              ? const CircularProgressIndicator()
-              : Expanded(
-                  child: ListView.builder(
-                    itemCount: _searchResults.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(_searchResults[index]),
-                        onTap: () {
-                          // Handle item tap, e.g., navigate to item details
-                          print('Tapped: ${_searchResults[index]}');
-                          _searchController.clear();
-                          setState(() => _searchResults.clear());
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => DetailView()),
-                          );
-                        },
+          SizedBox(height: 12),
+          if (loading)
+            const Padding(
+              padding: EdgeInsets.all(12),
+              child: CircularProgressIndicator(),
+            )
+          else if (searchController.text.isNotEmpty && searchResults.isEmpty)
+            Padding(
+              padding: EdgeInsets.all(12),
+              child: Text('No result found.'),
+            )
+          else
+            Expanded(
+              child: ListView.builder(
+                itemCount: searchResults.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(searchResults[index]),
+                    onTap: () {
+                      print('Tapped: ${searchResults[index]}');
+                      searchController.clear();
+                      setState(() => searchResults.clear());
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DetailView(
+                            category: 'Hotels',
+                            locationName: searchResults[index],
+                          ),
+                        ),
                       );
                     },
-                  ),
-                ),
+                  );
+                },
+              ),
+            ),
         ],
       ),
     );
