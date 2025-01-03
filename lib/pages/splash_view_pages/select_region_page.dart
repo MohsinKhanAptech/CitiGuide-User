@@ -3,16 +3,16 @@ import 'package:citiguide_user/view/main_view.dart';
 
 import 'package:flutter/material.dart';
 
-class RegionSelectPage extends StatefulWidget {
-  const RegionSelectPage({super.key, required this.incrementPage});
+class SelectRegionPage extends StatefulWidget {
+  const SelectRegionPage({super.key, required this.incrementPage});
 
   final VoidCallback incrementPage;
 
   @override
-  State<RegionSelectPage> createState() => _RegionSelectPageState();
+  State<SelectRegionPage> createState() => _SelectRegionPageState();
 }
 
-class _RegionSelectPageState extends State<RegionSelectPage> {
+class _SelectRegionPageState extends State<SelectRegionPage> {
   String? errorMessage;
 
   @override

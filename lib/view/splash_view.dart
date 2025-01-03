@@ -1,5 +1,5 @@
 import 'package:citiguide_user/pages/splash_view_pages/welcome_page.dart';
-import 'package:citiguide_user/pages/splash_view_pages/region_select_page.dart';
+import 'package:citiguide_user/pages/splash_view_pages/select_region_page.dart';
 
 import 'package:flutter/material.dart';
 
@@ -32,7 +32,7 @@ class _SplashPageHandlerState extends State<SplashPageHandler> {
 
     return [
       WelcomePage(incrementPage: incrementPage),
-      RegionSelectPage(incrementPage: incrementPage),
+      SelectRegionPage(incrementPage: incrementPage),
     ][page];
   }
 }
