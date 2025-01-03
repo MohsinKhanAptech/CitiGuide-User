@@ -18,6 +18,8 @@ Future<void> main() async {
   runApp(const MyApp());
 }
 
+// TODO: implement a custom splash screen if possible.
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 

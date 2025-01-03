@@ -18,8 +18,11 @@ dependencies:
   flutter_map: ^7.0.2
   latlong2: ^0.9.1
   flutter_map_cancellable_tile_provider: ^3.0.2
+  geolocator: ^13.0.2
+  geocoding: ^3.0.0
   shared_preferences: ^2.3.4
   internet_connection_checker: ^3.0.1
+  flutter_native_splash: ^2.4.4
 
 dev_dependencies:
   flutter_test:
