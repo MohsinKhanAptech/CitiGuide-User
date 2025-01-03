@@ -51,17 +51,15 @@ class _HomeState extends State<Home> {
 
   Future<void> getSelectedCity() async {
     String? city = prefs.getString('city');
-    setState(() {
-      selectedCity = cities.lookup(city);
-    });
+    setState(() => selectedCity = cities.lookup(city));
   }
 
   @override
   void initState() {
     super.initState();
-    initConstants().then((value) {
-      getSelectedCity();
-    });
+
+    initConstants().then((value) => getSelectedCity());
+
     subscription = connectionChecker.onStatusChange.listen(
       (InternetConnectionStatus status) {
         if (status == InternetConnectionStatus.connected) {
