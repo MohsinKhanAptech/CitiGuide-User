@@ -107,15 +107,15 @@ class _SearchPageBodyState extends State<SearchPageBody> {
                       print('Tapped: ${searchResults[index]}');
                       searchController.clear();
                       setState(() => searchResults.clear());
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DetailView(
-                            category: 'Hotels',
-                            locationName: searchResults[index],
-                          ),
-                        ),
-                      );
+                      //Navigator.push(
+                      //  context,
+                      //  MaterialPageRoute(
+                      //    builder: (context) => DetailView(
+                      //      category: 'Hotels',
+                      //      locationName: searchResults[index],
+                      //    ),
+                      //  ),
+                      //);
                     },
                   );
                 },

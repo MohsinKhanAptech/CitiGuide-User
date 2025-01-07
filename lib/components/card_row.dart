@@ -5,10 +5,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class CardRow extends StatefulWidget {
-  const CardRow({super.key, required this.title, required this.category});
+  const CardRow({
+    super.key,
+    required this.title,
+    required this.category,
+    required this.categoryID,
+  });
 
   final String title;
   final String category;
+  final String categoryID;
 
   @override
   State<CardRow> createState() => _CardRowState();
@@ -20,9 +26,9 @@ class _CardRowState extends State<CardRow> {
 
   Future<void> getData() async {
     querySnapshot = await citiesRef
-        .doc(selectedCity)
+        .doc(selectedCityID)
         .collection('categories')
-        .doc(widget.category)
+        .doc(widget.categoryID)
         .collection('locations')
         .get();
   }
@@ -47,6 +53,7 @@ class _CardRowState extends State<CardRow> {
                 widget.title,
                 style: const TextStyle(
                   fontSize: 20,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ),
@@ -74,8 +81,11 @@ class _CardRowState extends State<CardRow> {
               itemBuilder: (context, index) {
                 return PrimaryCard(
                   width: 200,
-                  title: querySnapshot.docs[index].get('name'),
+                  locationID: querySnapshot.docs[index].id,
+                  locationName: querySnapshot.docs[index].get('name'),
+                  locationImageUrl: querySnapshot.docs[index].get('imageUrl'),
                   category: widget.category,
+                  categoryID: widget.categoryID,
                 );
               },
             ),

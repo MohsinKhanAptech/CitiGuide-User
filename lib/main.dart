@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:citiguide_user/utils/constants.dart';
 import 'package:citiguide_user/view/internet_unavailable_view.dart';
+import 'package:citiguide_user/view/loading_view.dart';
 import 'package:citiguide_user/view/main_view.dart';
 import 'package:citiguide_user/view/splash_view.dart';
 
@@ -45,6 +46,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  bool loading = true;
   bool internetAvailable = true;
   Timer? waitForReconnect;
   late StreamSubscription<InternetConnectionStatus> subscription;
@@ -52,13 +54,17 @@ class _HomeState extends State<Home> {
   Future<void> getSelectedCity() async {
     String? city = prefs.getString('city');
     setState(() => selectedCity = cities.lookup(city));
+    String? cityID = prefs.getString('cityID');
+    setState(() => selectedCityID = citiesID.lookup(cityID));
   }
 
   @override
   void initState() {
     super.initState();
 
-    initConstants().then((value) => getSelectedCity());
+    initConstants(getSelectedCity).then((value) {
+      setState(() => loading = false);
+    });
 
     subscription = connectionChecker.onStatusChange.listen(
       (InternetConnectionStatus status) {
@@ -86,10 +92,11 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    if (!internetAvailable) {
+    if (loading) {
+      return LoadingView();
+    } else if (!internetAvailable) {
       return InternetUnavailableView();
-    }
-    if (selectedCity == null) {
+    } else if (selectedCity == null) {
       return SplashView();
     } else {
       return MainView();

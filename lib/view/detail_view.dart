@@ -13,11 +13,13 @@ class DetailView extends StatefulWidget {
   const DetailView({
     super.key,
     required this.category,
-    required this.locationName,
+    required this.categoryID,
+    required this.locationID,
   });
 
   final String category;
-  final String locationName;
+  final String categoryID;
+  final String locationID;
 
   @override
   State<DetailView> createState() => _DetailViewState();
@@ -29,11 +31,11 @@ class _DetailViewState extends State<DetailView> {
 
   Future<void> getData() async {
     documentSnapshot = await citiesRef
-        .doc(selectedCity)
+        .doc(selectedCityID)
         .collection('categories')
-        .doc(widget.category)
+        .doc(widget.categoryID)
         .collection('locations')
-        .doc(widget.locationName)
+        .doc(widget.locationID)
         .get();
   }
 
@@ -99,6 +101,7 @@ class DetailViewBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String locationName = documentSnapshot.get('name');
+    String locationImageUrl = documentSnapshot.get('imageUrl');
     String locationDescription = documentSnapshot.get('description');
     double locationRating = documentSnapshot.get('rating');
 
@@ -107,36 +110,29 @@ class DetailViewBody extends StatelessWidget {
         Container(
           height: 300,
           color: Colors.grey.shade400,
-          child: Center(
-            child: Text('Location image'),
+          child: Image.network(
+            locationImageUrl,
+            fit: BoxFit.cover,
           ),
         ),
         SizedBox(height: 24),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    locationName,
-                    style: TextStyle(
-                      fontSize: 24,
-                    ),
-                  ),
-                ],
+              Text(
+                locationName,
+                style: TextStyle(
+                  fontSize: 24,
+                ),
               ),
               SizedBox(height: 12),
-              Row(
-                children: [
-                  Text(
-                    locationDescription,
-                    style: TextStyle(
-                      fontSize: 18,
-                    ),
-                  ),
-                ],
+              Text(
+                locationDescription,
+                style: TextStyle(
+                  fontSize: 18,
+                ),
               ),
               SizedBox(height: 24),
               DetailViewActionButtonContainer(

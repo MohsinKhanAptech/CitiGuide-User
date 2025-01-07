@@ -7,9 +7,18 @@ class ChangeRegionPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    void onPressed() {
-      prefs.setString('city', selectedCity!);
-      Navigator.pop(context);
+    Future<void> onPressed() async {
+      await prefs.setString('city', selectedCity!);
+      await prefs.setString('cityID', selectedCityID!);
+      await getCategories();
+      if (context.mounted) {
+        Navigator.pop(context);
+      }
+    }
+
+    void onSelected(String? city) {
+      selectedCity = city;
+      selectedCityID = citiesID.elementAt(cities.toList().indexOf(city!));
     }
 
     return SafeArea(
@@ -28,7 +37,7 @@ class ChangeRegionPage extends StatelessWidget {
               DropdownMenu(
                 width: 160,
                 label: Text('City'),
-                onSelected: (String? value) => selectedCity = value,
+                onSelected: (String? value) => onSelected(value),
                 initialSelection: selectedCity,
                 dropdownMenuEntries: [
                   for (var i = 0; i < cities.length; i++)

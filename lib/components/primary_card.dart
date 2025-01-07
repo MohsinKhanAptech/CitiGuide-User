@@ -5,14 +5,20 @@ import 'package:flutter/material.dart';
 class PrimaryCard extends StatelessWidget {
   const PrimaryCard({
     super.key,
-    required this.title,
+    required this.locationImageUrl,
+    required this.locationName,
+    required this.locationID,
     required this.category,
+    required this.categoryID,
     this.height,
     this.width,
   });
 
-  final String title;
+  final String locationImageUrl;
+  final String locationName;
+  final String locationID;
   final String category;
+  final String categoryID;
   final double? height;
   final double? width;
 
@@ -22,7 +28,8 @@ class PrimaryCard extends StatelessWidget {
       MaterialPageRoute(
         builder: (context) => DetailView(
           category: category,
-          locationName: title,
+          categoryID: categoryID,
+          locationID: locationID,
         ),
       ),
     );
@@ -47,9 +54,10 @@ class PrimaryCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.grey.shade400,
                     borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Center(
-                    child: Text('location image'),
+                    image: DecorationImage(
+                      image: NetworkImage(locationImageUrl),
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
               ),
@@ -58,8 +66,7 @@ class PrimaryCard extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Text(
-                  title,
-                  maxLines: 2,
+                  locationName,
                   style: const TextStyle(
                     fontSize: 14,
                     overflow: TextOverflow.ellipsis,

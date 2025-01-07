@@ -6,7 +6,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 late SharedPreferences prefs;
 final connectionChecker = InternetConnectionChecker.instance;
 Set<String> cities = {};
+Set<String> citiesID = {};
+Set<String> categories = {};
+Set<String> categoriesID = {};
 String? selectedCity;
+String? selectedCityID;
 
 FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
@@ -14,11 +18,34 @@ FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
 CollectionReference citiesRef = firebaseFirestore.collection('cities');
 late QuerySnapshot<Object?> citiesSnap;
 
-Future<void> initConstants() async {
+Future<void> initConstants(Future<void> Function() getSelectedCity) async {
   prefs = await SharedPreferences.getInstance();
+
+  // Gets cities
   citiesSnap = await citiesRef.get();
   for (var city in citiesSnap.docs) {
     cities.add(city.get('name'));
+    citiesID.add(city.id);
+  }
+
+  // Gets selected city
+  await getSelectedCity();
+
+  // Gets categories
+  await getCategories();
+}
+
+Future<void> getCategories() async {
+  categories.clear();
+  categoriesID.clear();
+  CollectionReference categoriesRef = firebaseFirestore
+      .collection('cities')
+      .doc(selectedCityID)
+      .collection('categories');
+  QuerySnapshot<Object?> categoriesSnap = await categoriesRef.get();
+  for (var category in categoriesSnap.docs) {
+    categories.add(category.get('name'));
+    categoriesID.add(category.id);
   }
 }
 

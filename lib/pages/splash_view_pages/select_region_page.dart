@@ -24,6 +24,8 @@ class _SelectRegionPageState extends State<SelectRegionPage> {
         setState(() => errorMessage = 'Please select your city.');
       } else {
         await prefs.setString('city', selectedCity!);
+        await prefs.setString('cityID', selectedCityID!);
+        await getCategories();
         if (context.mounted) {
           Navigator.pushAndRemoveUntil(
             context,
@@ -32,6 +34,11 @@ class _SelectRegionPageState extends State<SelectRegionPage> {
           );
         }
       }
+    }
+
+    void onSelected(String? city) {
+      selectedCity = city;
+      selectedCityID = citiesID.elementAt(cities.toList().indexOf(city!));
     }
 
     return SafeArea(
@@ -51,7 +58,7 @@ class _SelectRegionPageState extends State<SelectRegionPage> {
                 width: 160,
                 errorText: errorMessage,
                 label: Text('City'),
-                onSelected: (String? value) => selectedCity = value,
+                onSelected: (String? value) => onSelected(value),
                 initialSelection: selectedCity,
                 dropdownMenuEntries: [
                   for (var i = 0; i < cities.length; i++)
