@@ -8,7 +8,6 @@ class PrimaryCard extends StatelessWidget {
     required this.locationImageUrl,
     required this.locationName,
     required this.locationID,
-    required this.category,
     required this.categoryID,
     this.height,
     this.width,
@@ -17,7 +16,6 @@ class PrimaryCard extends StatelessWidget {
   final String locationImageUrl;
   final String locationName;
   final String locationID;
-  final String category;
   final String categoryID;
   final double? height;
   final double? width;
@@ -27,7 +25,6 @@ class PrimaryCard extends StatelessWidget {
       context,
       MaterialPageRoute(
         builder: (context) => DetailView(
-          category: category,
           categoryID: categoryID,
           locationID: locationID,
         ),
@@ -50,7 +47,6 @@ class PrimaryCard extends StatelessWidget {
               AspectRatio(
                 aspectRatio: 3 / 2,
                 child: DecoratedBox(
-                  // TODO: replace this container with image.
                   decoration: BoxDecoration(
                     color: Colors.grey.shade400,
                     borderRadius: BorderRadius.circular(8),

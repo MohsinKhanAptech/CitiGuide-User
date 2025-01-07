@@ -12,12 +12,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class DetailView extends StatefulWidget {
   const DetailView({
     super.key,
-    required this.category,
     required this.categoryID,
     required this.locationID,
   });
 
-  final String category;
   final String categoryID;
   final String locationID;
 

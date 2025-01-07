@@ -36,6 +36,7 @@ class ChangeRegionPage extends StatelessWidget {
               SizedBox(height: 12),
               DropdownMenu(
                 width: 160,
+                menuHeight: 200,
                 label: Text('City'),
                 onSelected: (String? value) => onSelected(value),
                 initialSelection: selectedCity,

@@ -84,7 +84,6 @@ class _CardRowState extends State<CardRow> {
                   locationID: querySnapshot.docs[index].id,
                   locationName: querySnapshot.docs[index].get('name'),
                   locationImageUrl: querySnapshot.docs[index].get('imageUrl'),
-                  category: widget.category,
                   categoryID: widget.categoryID,
                 );
               },

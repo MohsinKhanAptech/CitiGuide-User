@@ -56,6 +56,7 @@ class _SelectRegionPageState extends State<SelectRegionPage> {
               SizedBox(height: 12),
               DropdownMenu(
                 width: 160,
+                menuHeight: 200,
                 errorText: errorMessage,
                 label: Text('City'),
                 onSelected: (String? value) => onSelected(value),

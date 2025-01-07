@@ -1,6 +1,5 @@
 import 'package:citiguide_user/components/card_row.dart';
 import 'package:citiguide_user/utils/constants.dart';
-import 'package:citiguide_user/view/main_view.dart';
 
 import 'package:flutter/material.dart';
 
