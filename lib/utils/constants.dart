@@ -11,6 +11,9 @@ Set<String> categories = {};
 Set<String> categoriesID = {};
 String? selectedCity;
 String? selectedCityID;
+bool userSignedIn = false;
+String? userID;
+String? username;
 
 FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
@@ -21,18 +24,30 @@ late QuerySnapshot<Object?> citiesSnap;
 Future<void> initConstants(Future<void> Function() getSelectedCity) async {
   prefs = await SharedPreferences.getInstance();
 
-  // Gets cities
   citiesSnap = await citiesRef.get();
   for (var city in citiesSnap.docs) {
     cities.add(city.get('name'));
     citiesID.add(city.id);
   }
 
-  // Gets selected city
   await getSelectedCity();
 
-  // Gets categories
   await getCategories();
+
+  listenUserAuth();
+
+  username = prefs.getString('username');
+}
+
+Future<void> listenUserAuth() async {
+  firebaseAuth.authStateChanges().listen((User? user) {
+    if (user == null) {
+      userSignedIn = false;
+    } else {
+      userSignedIn = true;
+      userID = user.uid;
+    }
+  });
 }
 
 Future<void> getCategories() async {
