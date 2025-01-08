@@ -85,7 +85,7 @@ class OptionsViewAuthSection extends StatelessWidget {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Sign-Out'),
+          title: const Text('Sign-Out.'),
           content: Text('Are you sure you want to Sign-out?'),
           actions: [
             TextButton(

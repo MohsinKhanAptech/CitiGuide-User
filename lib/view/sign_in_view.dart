@@ -62,10 +62,9 @@ class _SignInViewBodyState extends State<SignInViewBody> {
         password: password,
       );
 
-      // save username locally
       final DocumentSnapshot userSnap = await firebaseFirestore
           .collection('users')
-          .doc(userCredential.user?.uid)
+          .doc(userCredential.user!.uid)
           .get();
       username = userSnap.get('name');
       prefs.setString('username', username!);
