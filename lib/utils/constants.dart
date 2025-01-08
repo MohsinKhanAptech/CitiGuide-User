@@ -14,6 +14,7 @@ String? selectedCityID;
 bool userSignedIn = false;
 String? userID;
 String? username;
+Set<String> userFavorites = {};
 
 FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
@@ -40,12 +41,15 @@ Future<void> initConstants(Future<void> Function() getSelectedCity) async {
 }
 
 Future<void> listenUserAuth() async {
-  firebaseAuth.authStateChanges().listen((User? user) {
+  firebaseAuth.authStateChanges().listen((User? user) async {
     if (user == null) {
       userSignedIn = false;
     } else {
       userSignedIn = true;
       userID = user.uid;
+      DocumentSnapshot userSnap =
+          await firebaseFirestore.collection('users').doc(userID).get();
+      userFavorites.addAll(userSnap.get('favorites'));
     }
   });
 }

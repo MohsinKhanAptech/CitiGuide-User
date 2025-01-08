@@ -64,6 +64,7 @@ class _SignUpViewBodyState extends State<SignUpViewBody> {
       await firebaseFirestore.collection('users').doc(userID).set({
         'name': name,
         'email': email,
+        'favorites': [],
       });
 
       // save username locally

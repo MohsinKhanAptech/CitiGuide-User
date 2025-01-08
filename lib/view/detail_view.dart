@@ -1,6 +1,7 @@
 import 'package:citiguide_user/utils/constants.dart';
 import 'package:citiguide_user/view/map_view.dart';
 import 'package:citiguide_user/view/review_view.dart';
+import 'package:citiguide_user/view/sign_in_view.dart';
 
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
@@ -201,13 +202,80 @@ class DetailViewBody extends StatelessWidget {
   }
 }
 
-class DetailViewActionButtonContainer extends StatelessWidget {
+class DetailViewActionButtonContainer extends StatefulWidget {
   const DetailViewActionButtonContainer({
     super.key,
     required this.documentSnapshot,
   });
 
   final DocumentSnapshot documentSnapshot;
+
+  @override
+  State<DetailViewActionButtonContainer> createState() =>
+      _DetailViewActionButtonContainerState();
+}
+
+class _DetailViewActionButtonContainerState
+    extends State<DetailViewActionButtonContainer> {
+  late bool isFavorite;
+
+  @override
+  void initState() {
+    super.initState();
+    isFavorite = checkIfFavorite();
+  }
+
+  void loginDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Sign-In.'),
+          content: Text('You need to sign-in to favorite locations.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                if (context.mounted) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SignInView()),
+                  );
+                }
+              },
+              child: const Text('Sign-In'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  bool checkIfFavorite() {
+    return userFavorites.contains(widget.documentSnapshot.id);
+  }
+
+  Future<void> favorite(BuildContext context) async {
+    if (userSignedIn) {
+      if (userFavorites.remove(widget.documentSnapshot.id)) {
+        firebaseFirestore
+            .collection('users')
+            .doc(userID)
+            .update({'favorites': userFavorites.toList()});
+      } else {
+        userFavorites.add(widget.documentSnapshot.id);
+        firebaseFirestore
+            .collection('users')
+            .doc(userID)
+            .update({'favorites': userFavorites.toList()});
+      }
+    } else {
+      loginDialog(context);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -217,17 +285,19 @@ class DetailViewActionButtonContainer extends StatelessWidget {
         DetailViewActionButton(
           icon: Icons.favorite_outline,
           activeIcon: Icons.favorite,
+          active: isFavorite,
           label: 'Favorite',
+          onTap: () => favorite(context),
         ),
         DetailViewActionButton(
           icon: Icons.location_on_outlined,
           label: 'Map',
-          onTap: () {
+          onTap: () async {
             Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) {
-                  return MapView(documentSnapshot: documentSnapshot);
+                  return MapView(documentSnapshot: widget.documentSnapshot);
                 },
               ),
             );
@@ -237,12 +307,12 @@ class DetailViewActionButtonContainer extends StatelessWidget {
           // TODO: implement directions to location.
           icon: Icons.directions_outlined,
           label: 'Directions',
-          onTap: () {
+          onTap: () async {
             Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) {
-                  return MapView(documentSnapshot: documentSnapshot);
+                  return MapView(documentSnapshot: widget.documentSnapshot);
                 },
               ),
             );
@@ -251,7 +321,7 @@ class DetailViewActionButtonContainer extends StatelessWidget {
         DetailViewActionButton(
           icon: Icons.star_outline,
           label: 'Reviews',
-          onTap: () {
+          onTap: () async {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => ReviewView()),
@@ -270,29 +340,38 @@ class DetailViewActionButton extends StatefulWidget {
     this.activeIcon,
     required this.label,
     this.onTap,
+    this.active = false,
   });
 
   final IconData icon;
   final IconData? activeIcon;
   final String label;
-  final VoidCallback? onTap;
+  final Future<void> Function()? onTap;
+  final bool active;
 
   @override
   State<DetailViewActionButton> createState() => _DetailViewActionButtonState();
 }
 
 class _DetailViewActionButtonState extends State<DetailViewActionButton> {
-  bool active = false;
+  late bool active;
   IconData? currentIcon;
 
   @override
   void initState() {
     super.initState();
-    currentIcon ??= widget.icon;
+    active = widget.active;
+    if (active) {
+      currentIcon ??= widget.activeIcon;
+    } else {
+      currentIcon ??= widget.icon;
+    }
   }
 
-  void onTap() {
-    if (widget.onTap != null) widget.onTap!();
+  Future<void> onTap() async {
+    if (widget.onTap != null) {
+      await widget.onTap!();
+    }
     setState(
       () {
         if (widget.activeIcon != null) {
