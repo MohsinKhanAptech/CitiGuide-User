@@ -6,7 +6,6 @@ import 'package:citiguide_user/pages/main_view_pages/options_page.dart';
 
 import 'package:flutter/material.dart';
 
-// NOTE: this view handles the main pages like discover, search, settings.
 class MainView extends StatefulWidget {
   const MainView({super.key});
 
