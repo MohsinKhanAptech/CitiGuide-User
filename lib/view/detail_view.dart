@@ -308,15 +308,18 @@ class _DetailViewActionButtonContainerState
           icon: Icons.directions_outlined,
           label: 'Directions',
           onTap: () async {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) {
-                  return MapView(documentSnapshot: widget.documentSnapshot);
-                },
-              ),
-            );
+            MapsLauncher.launchQuery(widget.documentSnapshot.get('name'));
           },
+          //onTap: () async {
+          //  Navigator.push(
+          //    context,
+          //    MaterialPageRoute(
+          //      builder: (context) {
+          //        return MapView(documentSnapshot: widget.documentSnapshot);
+          //      },
+          //    ),
+          //  );
+          //},
         ),
         DetailViewActionButton(
           icon: Icons.star_outline,
