@@ -140,8 +140,6 @@ class _SignInViewBodyState extends State<SignInViewBody> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: 300),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -159,6 +157,10 @@ class _SignInViewBodyState extends State<SignInViewBody> {
                 labelText: 'Email',
                 errorText: emailError,
                 border: OutlineInputBorder(),
+      child: SingleChildScrollView(
+        padding: EdgeInsets.symmetric(vertical: 24),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: 300),
               ),
             ),
             SizedBox(height: 12),
@@ -212,6 +214,7 @@ class _SignInViewBodyState extends State<SignInViewBody> {
                 ),
               ),
           ],
+          ),
         ),
       ),
     );

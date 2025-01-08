@@ -138,87 +138,90 @@ class _SignUpViewBodyState extends State<SignUpViewBody> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: 300),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Sign-Up',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+      child: SingleChildScrollView(
+        padding: EdgeInsets.symmetric(vertical: 24),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: 300),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Sign-Up',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            SizedBox(height: 24),
-            TextField(
-              controller: usernameController,
-              decoration: InputDecoration(
-                labelText: 'Username',
-                errorText: usernameError,
-                border: OutlineInputBorder(),
+              SizedBox(height: 24),
+              TextField(
+                controller: usernameController,
+                decoration: InputDecoration(
+                  labelText: 'Username',
+                  errorText: usernameError,
+                  border: OutlineInputBorder(),
+                ),
               ),
-            ),
-            SizedBox(height: 12),
-            TextField(
-              controller: emailController,
-              decoration: InputDecoration(
-                labelText: 'Email',
-                errorText: emailError,
-                border: OutlineInputBorder(),
+              SizedBox(height: 12),
+              TextField(
+                controller: emailController,
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  errorText: emailError,
+                  border: OutlineInputBorder(),
+                ),
               ),
-            ),
-            SizedBox(height: 12),
-            PasswordTextField(
-              labelText: 'Password',
-              controller: passwordController,
-              errorText: passwordError,
-            ),
-            SizedBox(height: 24),
-            TextButton(
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => SignInView()),
-                );
-              },
-              style: const ButtonStyle(
-                padding: WidgetStatePropertyAll(EdgeInsets.all(18)),
+              SizedBox(height: 12),
+              PasswordTextField(
+                labelText: 'Password',
+                controller: passwordController,
+                errorText: passwordError,
               ),
-              child: Text('Already have an account? click here!'),
-            ),
-            SizedBox(height: 12),
-            ElevatedButton(
-              onPressed: onPressed,
-              style: const ButtonStyle(
-                padding: WidgetStatePropertyAll(EdgeInsets.all(18)),
+              SizedBox(height: 24),
+              TextButton(
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => SignInView()),
+                  );
+                },
+                style: const ButtonStyle(
+                  padding: WidgetStatePropertyAll(EdgeInsets.all(18)),
+                ),
+                child: Text('Already have an account? click here!'),
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(width: 10),
-                  Text('Submit', style: TextStyle(fontSize: 16)),
-                  Icon(Icons.chevron_right),
-                ],
-              ),
-            ),
-            SizedBox(height: 12),
-            if (widget.canPop)
+              SizedBox(height: 12),
               ElevatedButton(
-                onPressed: () => Navigator.pop(context),
+                onPressed: onPressed,
                 style: const ButtonStyle(
                   padding: WidgetStatePropertyAll(EdgeInsets.all(18)),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.chevron_left),
-                    Text('Cancel', style: TextStyle(fontSize: 16)),
                     SizedBox(width: 10),
+                    Text('Submit', style: TextStyle(fontSize: 16)),
+                    Icon(Icons.chevron_right),
                   ],
                 ),
               ),
-          ],
+              SizedBox(height: 12),
+              if (widget.canPop)
+                ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: const ButtonStyle(
+                    padding: WidgetStatePropertyAll(EdgeInsets.all(18)),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.chevron_left),
+                      Text('Cancel', style: TextStyle(fontSize: 16)),
+                      SizedBox(width: 10),
+                    ],
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );
