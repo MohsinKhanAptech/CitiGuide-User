@@ -1,8 +1,9 @@
 import 'package:citiguide_user/utils/constants.dart';
 import 'package:citiguide_user/view/main_view.dart';
-import 'package:citiguide_user/view/settings_view.dart';
+import 'package:citiguide_user/view/options_view.dart';
 import 'package:citiguide_user/view/sign_in_view.dart';
 import 'package:citiguide_user/view/sign_up_view.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:flutter/material.dart';
 
@@ -46,28 +47,26 @@ class OptionsPageBody extends StatelessWidget {
           ),
           OptionsViewAuthSection(),
           OptionsTile(
-            settingsPage: 0,
             icon: Icons.favorite,
             title: 'Your Favorites',
           ),
           OptionsTile(
-            settingsPage: 0,
             icon: Icons.star,
             title: 'Your Reviews',
           ),
           OptionsTile(
-            settingsPage: 0,
+            optionsPage: 0,
             icon: Icons.language,
             title: 'Change Region',
           ),
           const Divider(),
           OptionsTile(
-            settingsPage: 0,
+            optionsPage: 1,
             icon: Icons.info,
             title: 'About',
           ),
           OptionsTile(
-            settingsPage: 0,
+            optionsPage: 2,
             icon: Icons.help,
             title: 'Help',
           ),
@@ -81,6 +80,24 @@ class OptionsViewAuthSection extends StatelessWidget {
   const OptionsViewAuthSection({super.key});
 
   void signOut(BuildContext context) {
+    Future<void> onConfirm() async {
+      Navigator.pop(context);
+      firebaseAuth.signOut();
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Center(
+              child: Text('Sign-out succesful.'),
+            ),
+          ),
+        );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => MainView()),
+        );
+      }
+    }
+
     showDialog(
       context: context,
       builder: (context) {
@@ -93,23 +110,7 @@ class OptionsViewAuthSection extends StatelessWidget {
               child: const Text('Cancel'),
             ),
             TextButton(
-              onPressed: () {
-                if (context.mounted) {
-                  Navigator.pop(context);
-                  firebaseAuth.signOut();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Center(
-                        child: Text('Sign-out succesful.'),
-                      ),
-                    ),
-                  );
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => MainView()),
-                  );
-                }
-              },
+              onPressed: onConfirm,
               child: const Text('Confirm'),
             ),
           ],
@@ -125,22 +126,18 @@ class OptionsViewAuthSection extends StatelessWidget {
         children: [
           const Divider(),
           OptionsTile(
-            settingsPage: 0,
             icon: Icons.person,
             title: 'Change Username',
           ),
           OptionsTile(
-            settingsPage: 0,
             icon: Icons.email,
             title: 'Change Email',
           ),
           OptionsTile(
-            settingsPage: 0,
             icon: Icons.password,
             title: 'Change Password',
           ),
           OptionsTile(
-            settingsPage: 0,
             icon: Icons.logout,
             title: 'Sign-Out',
             onTap: () => signOut(context),
@@ -153,7 +150,6 @@ class OptionsViewAuthSection extends StatelessWidget {
         children: [
           const Divider(),
           OptionsTile(
-            settingsPage: 0,
             icon: Icons.login,
             title: 'Sign-Up',
             onTap: () {
@@ -164,7 +160,6 @@ class OptionsViewAuthSection extends StatelessWidget {
             },
           ),
           OptionsTile(
-            settingsPage: 0,
             icon: Icons.login,
             title: 'Sign-In',
             onTap: () {
@@ -184,13 +179,13 @@ class OptionsViewAuthSection extends StatelessWidget {
 class OptionsTile extends StatelessWidget {
   const OptionsTile({
     super.key,
-    required this.settingsPage,
+    this.optionsPage,
     required this.icon,
     required this.title,
     this.onTap,
   });
 
-  final int settingsPage;
+  final int? optionsPage;
   final IconData icon;
   final String title;
   final VoidCallback? onTap;
@@ -201,11 +196,11 @@ class OptionsTile extends StatelessWidget {
       onTap: () {
         if (onTap != null) {
           onTap!();
-        } else {
+        } else if (optionsPage != null) {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => SettingsView(page: settingsPage),
+              builder: (context) => OptionsView(page: optionsPage!),
             ),
           );
         }
