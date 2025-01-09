@@ -119,6 +119,81 @@ class OptionsViewAuthSection extends StatelessWidget {
     );
   }
 
+  void deleteAccount(BuildContext context) {
+    Future<void> onConfirm() async {
+      try {
+        Navigator.pop(context);
+        await firebaseAuth.currentUser!.delete().then((value) {
+          firebaseFirestore.collection('users').doc(userID).delete();
+        });
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Center(
+                child: Text('Account deleted succesfully.'),
+              ),
+            ),
+          );
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => MainView()),
+          );
+        }
+      } on FirebaseAuthException {
+        if (context.mounted) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => SignInView(reauthForDeletion: true),
+            ),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Center(
+                child: Text('Sign-In to verify account deletion.'),
+              ),
+            ),
+          );
+        }
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Center(
+                child: Text('Account deleted succesfully.'),
+              ),
+            ),
+          );
+        }
+      }
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Delete Account.'),
+          content: Text(
+            'Are you sure you want to delete your account?\nOnce deleted it can not be recovered.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: onConfirm,
+              child: const Text(
+                'Confirm',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (userSignedIn) {
@@ -141,6 +216,11 @@ class OptionsViewAuthSection extends StatelessWidget {
             icon: Icons.logout,
             title: 'Sign-Out',
             onTap: () => signOut(context),
+          ),
+          OptionsTile(
+            icon: Icons.delete,
+            title: 'Delete Account',
+            onTap: () => deleteAccount(context),
           ),
           const Divider(),
         ],

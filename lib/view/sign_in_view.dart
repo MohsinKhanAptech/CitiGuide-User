@@ -9,22 +9,35 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class SignInView extends StatelessWidget {
-  const SignInView({super.key, this.canPop = true});
+  const SignInView({
+    super.key,
+    this.canPop = true,
+    this.reauthForDeletion = false,
+  });
   final bool canPop;
+  final bool reauthForDeletion;
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: SignInViewBody(canPop: canPop),
+        body: SignInViewBody(
+          canPop: canPop,
+          reauthForDeletion: reauthForDeletion,
+        ),
       ),
     );
   }
 }
 
 class SignInViewBody extends StatefulWidget {
-  const SignInViewBody({super.key, required this.canPop});
+  const SignInViewBody({
+    super.key,
+    required this.canPop,
+    required this.reauthForDeletion,
+  });
   final bool canPop;
+  final bool reauthForDeletion;
 
   @override
   State<SignInViewBody> createState() => _SignInViewBodyState();
@@ -54,6 +67,21 @@ class _SignInViewBodyState extends State<SignInViewBody> {
             ),
           ),
         );
+      }
+
+      if (widget.reauthForDeletion) {
+        final UserCredential userCredential =
+            await firebaseAuth.currentUser!.reauthenticateWithCredential(
+          EmailAuthProvider.credential(email: email, password: password),
+        );
+        await userCredential.user!.delete();
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => MainView()),
+          );
+        }
+        return;
       }
 
       final UserCredential userCredential =
@@ -140,80 +168,80 @@ class _SignInViewBodyState extends State<SignInViewBody> {
   @override
   Widget build(BuildContext context) {
     return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Sign-In',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 24),
-            TextField(
-              controller: emailController,
-              decoration: InputDecoration(
-                labelText: 'Email',
-                errorText: emailError,
-                border: OutlineInputBorder(),
       child: SingleChildScrollView(
         padding: EdgeInsets.symmetric(vertical: 24),
         child: ConstrainedBox(
           constraints: BoxConstraints(maxWidth: 300),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Sign-In',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            SizedBox(height: 12),
-            PasswordTextField(
-              labelText: 'Password',
-              controller: passwordController,
-              errorText: passwordError,
-            ),
-            SizedBox(height: 24),
-            TextButton(
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => SignUpView()),
-                );
-              },
-              style: const ButtonStyle(
-                padding: WidgetStatePropertyAll(EdgeInsets.all(18)),
+              SizedBox(height: 24),
+              TextField(
+                controller: emailController,
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  errorText: emailError,
+                  border: OutlineInputBorder(),
+                ),
               ),
-              child: Text('Don\'t have an account? click here!'),
-            ),
-            SizedBox(height: 12),
-            ElevatedButton(
-              onPressed: onPressed,
-              style: const ButtonStyle(
-                padding: WidgetStatePropertyAll(EdgeInsets.all(18)),
+              SizedBox(height: 12),
+              PasswordTextField(
+                labelText: 'Password',
+                controller: passwordController,
+                errorText: passwordError,
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(width: 10),
-                  Text('Submit', style: TextStyle(fontSize: 16)),
-                  Icon(Icons.chevron_right),
-                ],
+              SizedBox(height: 24),
+              TextButton(
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => SignUpView()),
+                  );
+                },
+                style: const ButtonStyle(
+                  padding: WidgetStatePropertyAll(EdgeInsets.all(18)),
+                ),
+                child: Text('Don\'t have an account? click here!'),
               ),
-            ),
-            SizedBox(height: 12),
-            if (widget.canPop)
+              SizedBox(height: 12),
               ElevatedButton(
-                onPressed: () => Navigator.pop(context),
+                onPressed: onPressed,
                 style: const ButtonStyle(
                   padding: WidgetStatePropertyAll(EdgeInsets.all(18)),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.chevron_left),
-                    Text('Cancel', style: TextStyle(fontSize: 16)),
                     SizedBox(width: 10),
+                    Text('Submit', style: TextStyle(fontSize: 16)),
+                    Icon(Icons.chevron_right),
                   ],
                 ),
               ),
-          ],
+              SizedBox(height: 12),
+              if (widget.canPop)
+                ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: const ButtonStyle(
+                    padding: WidgetStatePropertyAll(EdgeInsets.all(18)),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.chevron_left),
+                      Text('Cancel', style: TextStyle(fontSize: 16)),
+                      SizedBox(width: 10),
+                    ],
+                  ),
+                ),
+            ],
           ),
         ),
       ),
