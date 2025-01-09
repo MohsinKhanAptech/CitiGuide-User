@@ -76,6 +76,15 @@ class _SignInViewBodyState extends State<SignInViewBody> {
         );
         await userCredential.user!.delete();
         if (mounted) {
+          ScaffoldMessenger.of(context).clearSnackBars();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              backgroundColor: Colors.green,
+              content: Center(
+                child: Text('Account deleted successfully.'),
+              ),
+            ),
+          );
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => MainView()),
