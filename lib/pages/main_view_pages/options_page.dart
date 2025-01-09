@@ -1,4 +1,5 @@
 import 'package:citiguide_user/utils/constants.dart';
+import 'package:citiguide_user/view/user_favorites_view.dart';
 import 'package:citiguide_user/view/main_view.dart';
 import 'package:citiguide_user/view/options_view.dart';
 import 'package:citiguide_user/view/sign_in_view.dart';
@@ -47,6 +48,12 @@ class OptionsPageBody extends StatelessWidget {
           ),
           OptionsViewAuthSection(),
           OptionsTile(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => UserFavoritesView()),
+              );
+            },
             icon: Icons.favorite,
             title: 'Your Favorites',
           ),

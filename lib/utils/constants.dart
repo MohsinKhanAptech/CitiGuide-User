@@ -1,7 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 late SharedPreferences prefs;
 final connectionChecker = InternetConnectionChecker.instance;
@@ -47,11 +47,18 @@ Future<void> listenUserAuth() async {
     } else {
       userSignedIn = true;
       userID = user.uid;
-      DocumentSnapshot userSnap =
-          await firebaseFirestore.collection('users').doc(userID).get();
-      userFavorites.addAll(userSnap.get('favorites'));
+      await fetchUserFavorites();
     }
   });
+}
+
+Future<void> fetchUserFavorites() async {
+  DocumentSnapshot userSnap =
+      await firebaseFirestore.collection('users').doc(userID).get();
+  List<dynamic> favorites = userSnap.get('favorites') as List<dynamic>;
+  for (var location in favorites) {
+    userFavorites.add(location);
+  }
 }
 
 Future<void> getCategories() async {

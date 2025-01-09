@@ -1,14 +1,14 @@
+import 'package:citiguide_user/view/reviews_view.dart';
+import 'package:citiguide_user/view/sign_in_view.dart';
 import 'package:citiguide_user/utils/constants.dart';
 import 'package:citiguide_user/view/map_view.dart';
-import 'package:citiguide_user/view/review_view.dart';
-import 'package:citiguide_user/view/sign_in_view.dart';
 
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 
 class DetailView extends StatefulWidget {
   const DetailView({
@@ -26,10 +26,10 @@ class DetailView extends StatefulWidget {
 
 class _DetailViewState extends State<DetailView> {
   bool loading = true;
-  late DocumentSnapshot documentSnapshot;
+  late DocumentSnapshot locationSnap;
 
   Future<void> getData() async {
-    documentSnapshot = await citiesRef
+    locationSnap = await citiesRef
         .doc(selectedCityID)
         .collection('categories')
         .doc(widget.categoryID)
@@ -57,23 +57,26 @@ class _DetailViewState extends State<DetailView> {
     }
     return SafeArea(
       child: Scaffold(
-        appBar: DetailViewAppBar(documentSnapshot: documentSnapshot),
-        body: DetailViewBody(documentSnapshot: documentSnapshot),
+        appBar: DetailViewAppBar(locationSnap: locationSnap),
+        body: DetailViewBody(
+          locationSnap: locationSnap,
+          categoryID: widget.categoryID,
+        ),
       ),
     );
   }
 }
 
 class DetailViewAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const DetailViewAppBar({super.key, required this.documentSnapshot});
-  final DocumentSnapshot documentSnapshot;
+  const DetailViewAppBar({super.key, required this.locationSnap});
+  final DocumentSnapshot locationSnap;
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 
   @override
   Widget build(BuildContext context) {
-    final String locationName = documentSnapshot.get('name');
+    final String locationName = locationSnap.get('name');
 
     return AppBar(
       title: Text(locationName.toTitleCase),
@@ -94,15 +97,20 @@ class DetailViewAppBar extends StatelessWidget implements PreferredSizeWidget {
 }
 
 class DetailViewBody extends StatelessWidget {
-  const DetailViewBody({super.key, required this.documentSnapshot});
-  final DocumentSnapshot documentSnapshot;
+  const DetailViewBody({
+    super.key,
+    required this.locationSnap,
+    required this.categoryID,
+  });
+  final DocumentSnapshot locationSnap;
+  final String categoryID;
 
   @override
   Widget build(BuildContext context) {
-    String locationName = documentSnapshot.get('name');
-    String locationImageUrl = documentSnapshot.get('imageUrl');
-    String locationDescription = documentSnapshot.get('description');
-    double locationRating = documentSnapshot.get('rating');
+    String locationName = locationSnap.get('name');
+    String locationImageUrl = locationSnap.get('imageUrl');
+    String locationDescription = locationSnap.get('description');
+    double locationRating = locationSnap.get('rating');
 
     return ListView(
       children: [
@@ -135,12 +143,13 @@ class DetailViewBody extends StatelessWidget {
               ),
               SizedBox(height: 24),
               DetailViewActionButtonContainer(
-                documentSnapshot: documentSnapshot,
+                locationSnap: locationSnap,
+                categoryID: categoryID,
               ),
               SizedBox(height: 12),
               Divider(),
               SizedBox(height: 12),
-              DetailViewMapPreview(documentSnapshot: documentSnapshot),
+              DetailViewMapPreview(locationSnap: locationSnap),
               SizedBox(height: 12),
               Divider(),
               SizedBox(height: 12),
@@ -205,10 +214,12 @@ class DetailViewBody extends StatelessWidget {
 class DetailViewActionButtonContainer extends StatefulWidget {
   const DetailViewActionButtonContainer({
     super.key,
-    required this.documentSnapshot,
+    required this.locationSnap,
+    required this.categoryID,
   });
 
-  final DocumentSnapshot documentSnapshot;
+  final DocumentSnapshot locationSnap;
+  final String categoryID;
 
   @override
   State<DetailViewActionButtonContainer> createState() =>
@@ -255,22 +266,26 @@ class _DetailViewActionButtonContainerState
   }
 
   bool checkIfFavorite() {
-    return userFavorites.contains(widget.documentSnapshot.id);
+    return userFavorites.contains(
+      '$selectedCityID-${widget.categoryID}-${widget.locationSnap.id}',
+    );
   }
 
   Future<void> favorite(BuildContext context) async {
     if (userSignedIn) {
-      if (userFavorites.remove(widget.documentSnapshot.id)) {
+      String favoriteEntry =
+          '$selectedCityID-${widget.categoryID}-${widget.locationSnap.id}';
+      if (userFavorites.remove(favoriteEntry)) {
         firebaseFirestore
             .collection('users')
             .doc(userID)
-            .update({'favorites': userFavorites.toList()});
+            .update({'favorites': userFavorites});
       } else {
-        userFavorites.add(widget.documentSnapshot.id);
+        userFavorites.add(favoriteEntry);
         firebaseFirestore
             .collection('users')
             .doc(userID)
-            .update({'favorites': userFavorites.toList()});
+            .update({'favorites': userFavorites});
       }
     } else {
       loginDialog(context);
@@ -297,7 +312,7 @@ class _DetailViewActionButtonContainerState
               context,
               MaterialPageRoute(
                 builder: (context) {
-                  return MapView(documentSnapshot: widget.documentSnapshot);
+                  return MapView(locationSnap: widget.locationSnap);
                 },
               ),
             );
@@ -308,14 +323,14 @@ class _DetailViewActionButtonContainerState
           icon: Icons.directions_outlined,
           label: 'Directions',
           onTap: () async {
-            MapsLauncher.launchQuery(widget.documentSnapshot.get('name'));
+            MapsLauncher.launchQuery(widget.locationSnap.get('name'));
           },
           //onTap: () async {
           //  Navigator.push(
           //    context,
           //    MaterialPageRoute(
           //      builder: (context) {
-          //        return MapView(documentSnapshot: widget.documentSnapshot);
+          //        return MapView(locationSnap: widget.locationSnap);
           //      },
           //    ),
           //  );
@@ -420,12 +435,12 @@ class _DetailViewActionButtonState extends State<DetailViewActionButton> {
 }
 
 class DetailViewMapPreview extends StatelessWidget {
-  const DetailViewMapPreview({super.key, required this.documentSnapshot});
-  final DocumentSnapshot documentSnapshot;
+  const DetailViewMapPreview({super.key, required this.locationSnap});
+  final DocumentSnapshot locationSnap;
 
   @override
   Widget build(BuildContext context) {
-    final GeoPoint locationGeoPoint = documentSnapshot.get('geopoint');
+    final GeoPoint locationGeoPoint = locationSnap.get('geopoint');
 
     return SizedBox(
       height: 250,
@@ -443,7 +458,7 @@ class DetailViewMapPreview extends StatelessWidget {
               context,
               MaterialPageRoute(
                 builder: (context) {
-                  return MapView(documentSnapshot: documentSnapshot);
+                  return MapView(locationSnap: locationSnap);
                 },
               ),
             );

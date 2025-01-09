@@ -6,13 +6,13 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 
 class MapView extends StatelessWidget {
-  const MapView({super.key, required this.documentSnapshot});
-  final DocumentSnapshot documentSnapshot;
+  const MapView({super.key, required this.locationSnap});
+  final DocumentSnapshot locationSnap;
 
   @override
   Widget build(BuildContext context) {
-    final String locationName = documentSnapshot.get('name');
-    final GeoPoint locationGeoPoint = documentSnapshot.get('geopoint');
+    final String locationName = locationSnap.get('name');
+    final GeoPoint locationGeoPoint = locationSnap.get('geopoint');
 
     return SafeArea(
       child: Scaffold(
