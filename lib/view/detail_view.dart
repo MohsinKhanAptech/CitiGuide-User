@@ -13,10 +13,12 @@ import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_ti
 class DetailView extends StatefulWidget {
   const DetailView({
     super.key,
+    this.cityID,
     required this.categoryID,
     required this.locationID,
   });
 
+  final String? cityID;
   final String categoryID;
   final String locationID;
 
@@ -29,8 +31,11 @@ class _DetailViewState extends State<DetailView> {
   late DocumentSnapshot locationSnap;
 
   Future<void> getData() async {
+    String? cityID = widget.cityID;
+    if (widget.cityID == null) cityID = selectedCityID;
+
     locationSnap = await citiesRef
-        .doc(selectedCityID)
+        .doc(cityID)
         .collection('categories')
         .doc(widget.categoryID)
         .collection('locations')

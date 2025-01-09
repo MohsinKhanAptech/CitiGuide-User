@@ -58,6 +58,7 @@ class _PrimaryTileState extends State<PrimaryTile> {
       context,
       MaterialPageRoute(
         builder: (context) => DetailView(
+          cityID: cityID,
           categoryID: categoryID,
           locationID: widget.locationID,
         ),
