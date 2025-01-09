@@ -1,3 +1,4 @@
+import 'package:citiguide_user/utils/constants.dart';
 import 'package:citiguide_user/view/detail_view.dart';
 
 import 'package:flutter/material.dart';
@@ -62,7 +63,7 @@ class PrimaryCard extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Text(
-                  locationName,
+                  locationName.toTitleCase,
                   style: const TextStyle(
                     fontSize: 14,
                     overflow: TextOverflow.ellipsis,

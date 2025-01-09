@@ -1,3 +1,4 @@
+import 'package:citiguide_user/utils/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
@@ -35,7 +36,7 @@ class MapViewAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: Text(locationName),
+      title: Text(locationName.toTitleCase),
       actions: [
         PopupMenuButton(
           itemBuilder: (BuildContext context) => [

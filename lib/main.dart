@@ -1,11 +1,10 @@
-import 'dart:async';
-
-import 'package:citiguide_user/utils/constants.dart';
 import 'package:citiguide_user/view/internet_unavailable_view.dart';
 import 'package:citiguide_user/view/loading_view.dart';
-import 'package:citiguide_user/view/main_view.dart';
 import 'package:citiguide_user/view/splash_view.dart';
+import 'package:citiguide_user/utils/constants.dart';
+import 'package:citiguide_user/view/main_view.dart';
 
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:citiguide_user/firebase_options.dart';

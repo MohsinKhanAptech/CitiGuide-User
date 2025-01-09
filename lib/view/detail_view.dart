@@ -76,7 +76,7 @@ class DetailViewAppBar extends StatelessWidget implements PreferredSizeWidget {
     final String locationName = documentSnapshot.get('name');
 
     return AppBar(
-      title: Text(locationName),
+      title: Text(locationName.toTitleCase),
       actions: [
         PopupMenuButton(
           itemBuilder: (BuildContext context) => [
@@ -121,7 +121,7 @@ class DetailViewBody extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                locationName,
+                locationName.toTitleCase,
                 style: TextStyle(
                   fontSize: 24,
                 ),

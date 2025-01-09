@@ -4,9 +4,6 @@ import 'package:citiguide_user/view/detail_view.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-// FIXME: search currently only works on 'Hotels' category of the selected city,
-// it needs to be able to search through all categories.
-// idk if it should search in cities other than the selected city.
 class SearchPageAppBar extends StatelessWidget {
   const SearchPageAppBar({super.key});
 
@@ -25,65 +22,104 @@ class SearchPageBody extends StatefulWidget {
 
 class _SearchPageBodyState extends State<SearchPageBody> {
   final TextEditingController searchController = TextEditingController();
-  List<String> searchResults = [];
+  List<Map<String, String>> searchResults = [];
   bool loading = false;
+  String selectedCategory = categories.elementAt(0);
+  String selectedCategoryID = categoriesID.elementAt(0);
 
-  Future<void> searchItems(String query) async {
+  Future<void> searchLocations(String query) async {
     setState(() {
       loading = true;
       searchResults.clear();
     });
 
     try {
-      final CollectionReference itemsCollection = FirebaseFirestore.instance
-          .collection('cities')
-          .doc(selectedCity)
+      CollectionReference locationsRef = citiesRef
+          .doc(selectedCityID)
           .collection('categories')
-          .doc('Hotels')
+          .doc(selectedCategoryID)
           .collection('locations');
-
-      final QuerySnapshot snapshot = await itemsCollection
+      QuerySnapshot locationsSnap = await locationsRef
           .where('name', isGreaterThanOrEqualTo: query.toLowerCase())
           .where('name', isLessThan: '${query.toLowerCase()}z')
           .get();
 
-      if (snapshot.docs.isNotEmpty) {
-        setState(() {
-          searchResults =
-              snapshot.docs.map((doc) => doc['name'] as String).toList();
+      for (var location in locationsSnap.docs) {
+        searchResults.add({
+          'name': location.get('name'),
+          'categoryID': selectedCategoryID,
+          'locationID': location.id,
         });
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error searching. Please try again later.')),
+          SnackBar(
+            content: Center(
+              child: Text('Search request failed, please try again.'),
+            ),
+          ),
         );
       }
     } finally {
-      setState(() => loading = false);
+      setState(() {
+        loading = false;
+      });
     }
+  }
+
+  Future<void> changeCategory(String category) async {
+    selectedCategory = category;
+    selectedCategoryID = categoriesID.elementAt(
+      categories.toList().indexOf(category),
+    );
+    searchController.clear();
+    setState(() {
+      searchResults.clear();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(24),
       child: Column(
         children: [
-          TextField(
-            controller: searchController,
-            onChanged: (value) {
-              if (value.isNotEmpty) {
-                searchItems(value);
-              } else {
-                setState(() => searchResults.clear());
-              }
-            },
-            decoration: const InputDecoration(
-              hintText: 'Search Locations...',
-              prefixIcon: Icon(Icons.search),
-              border: OutlineInputBorder(),
-            ),
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  autofocus: true,
+                  controller: searchController,
+                  onChanged: (value) {
+                    if (value.isNotEmpty) {
+                      searchLocations(value);
+                    } else {
+                      setState(() => searchResults.clear());
+                    }
+                  },
+                  decoration: const InputDecoration(
+                    label: Text('Search'),
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ),
+              SizedBox(width: 12),
+              DropdownMenu(
+                width: 160,
+                menuHeight: 200,
+                label: Text('category'),
+                onSelected: (String? value) => changeCategory(value!),
+                initialSelection: selectedCategory,
+                dropdownMenuEntries: [
+                  for (var i = 0; i < categories.length; i++)
+                    DropdownMenuEntry(
+                      value: categories.elementAt(i),
+                      label: categories.elementAt(i).toTitleCase,
+                    ),
+                ],
+              ),
+            ],
           ),
           SizedBox(height: 12),
           if (loading)
@@ -102,20 +138,19 @@ class _SearchPageBodyState extends State<SearchPageBody> {
                 itemCount: searchResults.length,
                 itemBuilder: (context, index) {
                   return ListTile(
-                    title: Text(searchResults[index]),
+                    title: Text(searchResults[index]['name']!.toTitleCase),
                     onTap: () {
-                      print('Tapped: ${searchResults[index]}');
                       searchController.clear();
                       setState(() => searchResults.clear());
-                      //Navigator.push(
-                      //  context,
-                      //  MaterialPageRoute(
-                      //    builder: (context) => DetailView(
-                      //      category: 'Hotels',
-                      //      locationName: searchResults[index],
-                      //    ),
-                      //  ),
-                      //);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DetailView(
+                            categoryID: searchResults[index]['categoryID']!,
+                            locationID: searchResults[index]['locationID']!,
+                          ),
+                        ),
+                      );
                     },
                   );
                 },
