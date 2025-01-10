@@ -10,11 +10,13 @@ class CardRow extends StatefulWidget {
     required this.title,
     required this.category,
     required this.categoryID,
+    required this.cityID,
   });
 
   final String title;
   final String category;
   final String categoryID;
+  final String cityID;
 
   @override
   State<CardRow> createState() => _CardRowState();
@@ -85,6 +87,7 @@ class _CardRowState extends State<CardRow> {
                   locationName: querySnapshot.docs[index].get('name'),
                   locationImageUrl: querySnapshot.docs[index].get('imageUrl'),
                   categoryID: widget.categoryID,
+                  cityID: widget.cityID,
                 );
               },
             ),

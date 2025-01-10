@@ -10,6 +10,7 @@ class PrimaryCard extends StatelessWidget {
     required this.locationName,
     required this.locationID,
     required this.categoryID,
+    required this.cityID,
     this.height,
     this.width,
   });
@@ -18,6 +19,7 @@ class PrimaryCard extends StatelessWidget {
   final String locationName;
   final String locationID;
   final String categoryID;
+  final String cityID;
   final double? height;
   final double? width;
 
@@ -26,6 +28,7 @@ class PrimaryCard extends StatelessWidget {
       context,
       MaterialPageRoute(
         builder: (context) => DetailView(
+          cityID: cityID,
           categoryID: categoryID,
           locationID: locationID,
         ),

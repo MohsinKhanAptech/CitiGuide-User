@@ -147,6 +147,7 @@ class _SearchPageBodyState extends State<SearchPageBody> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => DetailView(
+                            cityID: selectedCityID!,
                             categoryID: searchResults[index]['categoryID']!,
                             locationID: searchResults[index]['locationID']!,
                           ),

@@ -35,18 +35,7 @@ class MapViewAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
-      title: Text(locationName.toTitleCase),
-      actions: [
-        PopupMenuButton(
-          itemBuilder: (BuildContext context) => [
-            PopupMenuItem(
-              child: Text('menu option'),
-            ),
-          ],
-        ),
-      ],
-    );
+    return AppBar(title: Text(locationName.toTitleCase));
   }
 }
 

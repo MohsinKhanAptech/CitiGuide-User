@@ -1,6 +1,5 @@
 import 'package:citiguide_user/components/action_button.dart';
 import 'package:citiguide_user/components/map_preview.dart';
-import 'package:citiguide_user/components/review_card.dart';
 import 'package:citiguide_user/view/reviews_view.dart';
 import 'package:citiguide_user/view/sign_in_view.dart';
 import 'package:citiguide_user/utils/constants.dart';
@@ -13,12 +12,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class DetailView extends StatefulWidget {
   const DetailView({
     super.key,
-    this.cityID,
+    required this.cityID,
     required this.categoryID,
     required this.locationID,
   });
 
-  final String? cityID;
+  final String cityID;
   final String categoryID;
   final String locationID;
 
@@ -31,8 +30,7 @@ class _DetailViewState extends State<DetailView> {
   late DocumentSnapshot locationSnap;
 
   Future<void> getData() async {
-    String? cityID = widget.cityID;
-    if (widget.cityID == null) cityID = selectedCityID;
+    String cityID = widget.cityID;
 
     locationSnap = await citiesRef
         .doc(cityID)
@@ -64,8 +62,9 @@ class _DetailViewState extends State<DetailView> {
       child: Scaffold(
         appBar: DetailViewAppBar(locationSnap: locationSnap),
         body: DetailViewBody(
-          locationSnap: locationSnap,
+          cityID: widget.cityID,
           categoryID: widget.categoryID,
+          locationSnap: locationSnap,
         ),
       ),
     );
@@ -104,17 +103,20 @@ class DetailViewAppBar extends StatelessWidget implements PreferredSizeWidget {
 class DetailViewBody extends StatelessWidget {
   const DetailViewBody({
     super.key,
-    required this.locationSnap,
+    required this.cityID,
     required this.categoryID,
+    required this.locationSnap,
   });
-  final DocumentSnapshot locationSnap;
+  final String cityID;
   final String categoryID;
+  final DocumentSnapshot locationSnap;
 
   @override
   Widget build(BuildContext context) {
     String locationName = locationSnap.get('name');
     String locationImageUrl = locationSnap.get('imageUrl');
     String locationDescription = locationSnap.get('description');
+    double locationRating = locationSnap.get('rating');
 
     return ListView(
       children: [
@@ -138,6 +140,20 @@ class DetailViewBody extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 12),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    '${locationRating.toStringAsFixed(1)} / 5.0',
+                    style: TextStyle(
+                      fontSize: 18,
+                    ),
+                  ),
+                  SizedBox(width: 4),
+                  Icon(Icons.star_rounded),
+                ],
+              ),
+              SizedBox(height: 12),
               Text(
                 locationDescription,
                 style: TextStyle(
@@ -146,8 +162,9 @@ class DetailViewBody extends StatelessWidget {
               ),
               SizedBox(height: 24),
               DetailViewActionButtonContainer(
-                locationSnap: locationSnap,
+                cityID: cityID,
                 categoryID: categoryID,
+                locationSnap: locationSnap,
               ),
               SizedBox(height: 12),
               Divider(),
@@ -156,7 +173,6 @@ class DetailViewBody extends StatelessWidget {
               SizedBox(height: 12),
               Divider(),
               SizedBox(height: 12),
-              DetailViewReviewSection(locationSnap: locationSnap),
             ],
           ),
         ),
@@ -168,12 +184,14 @@ class DetailViewBody extends StatelessWidget {
 class DetailViewActionButtonContainer extends StatefulWidget {
   const DetailViewActionButtonContainer({
     super.key,
-    required this.locationSnap,
+    required this.cityID,
     required this.categoryID,
+    required this.locationSnap,
   });
 
-  final DocumentSnapshot locationSnap;
+  final String cityID;
   final String categoryID;
+  final DocumentSnapshot locationSnap;
 
   @override
   State<DetailViewActionButtonContainer> createState() =>
@@ -279,16 +297,6 @@ class _DetailViewActionButtonContainerState
           onTap: () async {
             MapsLauncher.launchQuery(widget.locationSnap.get('name'));
           },
-          //onTap: () async {
-          //  Navigator.push(
-          //    context,
-          //    MaterialPageRoute(
-          //      builder: (context) {
-          //        return MapView(locationSnap: widget.locationSnap);
-          //      },
-          //    ),
-          //  );
-          //},
         ),
         ActionButton(
           icon: Icons.star_outline,
@@ -296,80 +304,15 @@ class _DetailViewActionButtonContainerState
           onTap: () async {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => ReviewView()),
-            );
-          },
-        ),
-      ],
-    );
-  }
-}
-
-class DetailViewReviewSection extends StatelessWidget {
-  const DetailViewReviewSection({super.key, required this.locationSnap});
-  final DocumentSnapshot locationSnap;
-
-  @override
-  Widget build(BuildContext context) {
-    double locationRating = locationSnap.get('rating');
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                'Reviews',
-                style: TextStyle(fontSize: 24),
-              ),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    locationRating.toStringAsFixed(1),
-                    style: TextStyle(
-                      fontSize: 18,
-                    ),
-                  ),
-                  SizedBox(width: 4),
-                  for (var i = 0; i < 5; i++) Icon(Icons.star_rounded),
-                ],
-              ),
-            ],
-          ),
-        ),
-        SizedBox(height: 12),
-        for (var i = 0; i < 5; i++)
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ReviewCard(),
-          ),
-        InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => ReviewView()),
-            );
-          },
-          borderRadius: BorderRadius.circular(12),
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              child: Text(
-                'View More',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.primary,
-                  fontSize: 16,
+              MaterialPageRoute(
+                builder: (context) => ReviewsView(
+                  cityID: widget.cityID,
+                  categoryID: widget.categoryID,
+                  locationID: widget.locationSnap.id,
                 ),
               ),
-            ),
-          ),
+            );
+          },
         ),
       ],
     );

@@ -41,6 +41,7 @@ class DiscoverPageBody extends StatelessWidget {
           title: '${categories.elementAt(index)} in $selectedCity',
           category: categories.elementAt(index),
           categoryID: categoriesID.elementAt(index),
+          cityID: selectedCityID!,
         );
       },
     );

@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class ReviewCard extends StatelessWidget {
-  const ReviewCard({super.key});
+  const ReviewCard({super.key, required this.review});
+  final QueryDocumentSnapshot review;
 
   @override
   Widget build(BuildContext context) {
@@ -9,15 +11,21 @@ class ReviewCard extends StatelessWidget {
       minVerticalPadding: 12,
       contentPadding: EdgeInsets.all(0),
       leading: CircleAvatar(child: Icon(Icons.person)),
-      title: Text('User Name'),
+      title: Text(review.get('username')),
       trailing: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          for (var i = 0; i < 5; i++) Icon(Icons.star_rounded),
+          Text(
+            '${review.get('rating')} / 5',
+            style: TextStyle(fontSize: 16),
+          ),
+          SizedBox(width: 4),
+          Icon(Icons.star_rounded),
         ],
       ),
+      subtitle: Text(review.get('title')),
       titleAlignment: ListTileTitleAlignment.top,
-      subtitle: Text('User review of product'),
     );
   }
 }
