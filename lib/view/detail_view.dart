@@ -1,14 +1,14 @@
+import 'package:citiguide_user/components/action_button.dart';
+import 'package:citiguide_user/components/map_preview.dart';
+import 'package:citiguide_user/components/review_card.dart';
 import 'package:citiguide_user/view/reviews_view.dart';
 import 'package:citiguide_user/view/sign_in_view.dart';
 import 'package:citiguide_user/utils/constants.dart';
 import 'package:citiguide_user/view/map_view.dart';
 
 import 'package:flutter/material.dart';
-import 'package:latlong2/latlong.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 
 class DetailView extends StatefulWidget {
   const DetailView({
@@ -115,13 +115,11 @@ class DetailViewBody extends StatelessWidget {
     String locationName = locationSnap.get('name');
     String locationImageUrl = locationSnap.get('imageUrl');
     String locationDescription = locationSnap.get('description');
-    double locationRating = locationSnap.get('rating');
 
     return ListView(
       children: [
-        Container(
+        SizedBox(
           height: 300,
-          color: Colors.grey.shade400,
           child: Image.network(
             locationImageUrl,
             fit: BoxFit.cover,
@@ -154,60 +152,11 @@ class DetailViewBody extends StatelessWidget {
               SizedBox(height: 12),
               Divider(),
               SizedBox(height: 12),
-              DetailViewMapPreview(locationSnap: locationSnap),
+              MapPreview(locationSnap: locationSnap),
               SizedBox(height: 12),
               Divider(),
               SizedBox(height: 12),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Reviews',
-                      style: TextStyle(fontSize: 24),
-                    ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(locationRating.toStringAsFixed(1),
-                            style: TextStyle(fontSize: 18)),
-                        SizedBox(width: 4),
-                        for (var i = 0; i < 5; i++) Icon(Icons.star_rounded),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 12),
-              for (var i = 0; i < 5; i++)
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ReviewCard(),
-                ),
-              InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ReviewView()),
-                  );
-                },
-                borderRadius: BorderRadius.circular(12),
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    child: Text(
-                      'View More',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              DetailViewReviewSection(locationSnap: locationSnap),
             ],
           ),
         ),
@@ -302,14 +251,14 @@ class _DetailViewActionButtonContainerState
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        DetailViewActionButton(
+        ActionButton(
           icon: Icons.favorite_outline,
           activeIcon: Icons.favorite,
           active: isFavorite,
           label: 'Favorite',
           onTap: () => favorite(context),
         ),
-        DetailViewActionButton(
+        ActionButton(
           icon: Icons.location_on_outlined,
           label: 'Map',
           onTap: () async {
@@ -323,7 +272,7 @@ class _DetailViewActionButtonContainerState
             );
           },
         ),
-        DetailViewActionButton(
+        ActionButton(
           // TODO: implement directions to location.
           icon: Icons.directions_outlined,
           label: 'Directions',
@@ -341,7 +290,7 @@ class _DetailViewActionButtonContainerState
           //  );
           //},
         ),
-        DetailViewActionButton(
+        ActionButton(
           icon: Icons.star_outline,
           label: 'Reviews',
           onTap: () async {
@@ -356,163 +305,73 @@ class _DetailViewActionButtonContainerState
   }
 }
 
-class DetailViewActionButton extends StatefulWidget {
-  const DetailViewActionButton({
-    super.key,
-    required this.icon,
-    this.activeIcon,
-    required this.label,
-    this.onTap,
-    this.active = false,
-  });
-
-  final IconData icon;
-  final IconData? activeIcon;
-  final String label;
-  final Future<void> Function()? onTap;
-  final bool active;
-
-  @override
-  State<DetailViewActionButton> createState() => _DetailViewActionButtonState();
-}
-
-class _DetailViewActionButtonState extends State<DetailViewActionButton> {
-  late bool active;
-  IconData? currentIcon;
-
-  @override
-  void initState() {
-    super.initState();
-    active = widget.active;
-    if (active) {
-      currentIcon ??= widget.activeIcon;
-    } else {
-      currentIcon ??= widget.icon;
-    }
-  }
-
-  Future<void> onTap() async {
-    if (widget.onTap != null) {
-      await widget.onTap!();
-    }
-    setState(
-      () {
-        if (widget.activeIcon != null) {
-          active = !active;
-          if (active) {
-            currentIcon = widget.activeIcon;
-          } else {
-            currentIcon = widget.icon;
-          }
-        }
-      },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(12),
-      onTap: onTap,
-      child: Padding(
-        padding: EdgeInsets.all(12),
-        child: ConstrainedBox(
-          constraints: BoxConstraints(minWidth: 50, minHeight: 50),
-          child: Column(
-            children: [
-              Icon(
-                currentIcon,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              SizedBox(height: 2),
-              Text(
-                widget.label,
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class DetailViewMapPreview extends StatelessWidget {
-  const DetailViewMapPreview({super.key, required this.locationSnap});
+class DetailViewReviewSection extends StatelessWidget {
+  const DetailViewReviewSection({super.key, required this.locationSnap});
   final DocumentSnapshot locationSnap;
 
   @override
   Widget build(BuildContext context) {
-    final GeoPoint locationGeoPoint = locationSnap.get('geopoint');
+    double locationRating = locationSnap.get('rating');
 
-    return SizedBox(
-      height: 250,
-      child: FlutterMap(
-        options: MapOptions(
-          initialCenter: LatLng(
-            locationGeoPoint.latitude,
-            locationGeoPoint.longitude,
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                'Reviews',
+                style: TextStyle(fontSize: 24),
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    locationRating.toStringAsFixed(1),
+                    style: TextStyle(
+                      fontSize: 18,
+                    ),
+                  ),
+                  SizedBox(width: 4),
+                  for (var i = 0; i < 5; i++) Icon(Icons.star_rounded),
+                ],
+              ),
+            ],
           ),
-          initialZoom: 18,
-          minZoom: 16,
-          maxZoom: 20,
-          onTap: (tapPosition, latLng) {
+        ),
+        SizedBox(height: 12),
+        for (var i = 0; i < 5; i++)
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ReviewCard(),
+          ),
+        InkWell(
+          onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (context) {
-                  return MapView(locationSnap: locationSnap);
-                },
-              ),
+              MaterialPageRoute(builder: (context) => ReviewView()),
             );
           },
-        ),
-        children: [
-          TileLayer(
-            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-            tileProvider: CancellableNetworkTileProvider(),
-          ),
-          MarkerLayer(markers: [
-            Marker(
-              point: LatLng(
-                locationGeoPoint.latitude,
-                locationGeoPoint.longitude,
-              ),
-              rotate: true,
-              alignment: Alignment(0, -1),
-              child: Icon(
-                Icons.location_on,
-                color: Theme.of(context).colorScheme.primary,
-                size: 32,
+          borderRadius: BorderRadius.circular(12),
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: Text(
+                'View More',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.primary,
+                  fontSize: 16,
+                ),
               ),
             ),
-          ])
-        ],
-      ),
-    );
-  }
-}
-
-class ReviewCard extends StatelessWidget {
-  const ReviewCard({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      minVerticalPadding: 12,
-      contentPadding: EdgeInsets.all(0),
-      leading: CircleAvatar(child: Icon(Icons.person)),
-      title: Text('User Name'),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          for (var i = 0; i < 5; i++) Icon(Icons.star_rounded),
-        ],
-      ),
-      titleAlignment: ListTileTitleAlignment.top,
-      subtitle: Text('User review of product'),
+          ),
+        ),
+      ],
     );
   }
 }
