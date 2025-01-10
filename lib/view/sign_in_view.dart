@@ -60,13 +60,7 @@ class _SignInViewBodyState extends State<SignInViewBody> {
 
     try {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Center(
-              child: Text('Processing request.'),
-            ),
-          ),
-        );
+        processingRequestSnackBar(context);
       }
 
       if (widget.reauthForDeletion) {
@@ -121,27 +115,13 @@ class _SignInViewBodyState extends State<SignInViewBody> {
           MaterialPageRoute(builder: (context) => MainView()),
         );
       }
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Colors.red,
-            content: Center(
-              child: Text('Something went wrong.\n${e.message}'),
-            ),
-          ),
-        );
+        somethingWentWrongSnackBar(context);
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Colors.red,
-            content: Center(
-              child: Text('Something went wrong.'),
-            ),
-          ),
-        );
+        somethingWentWrongSnackBar(context);
       }
     }
   }

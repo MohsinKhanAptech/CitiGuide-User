@@ -2,6 +2,7 @@ import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 
 late SharedPreferences prefs;
 final connectionChecker = InternetConnectionChecker.instance;
@@ -73,6 +74,28 @@ Future<void> getCategories() async {
     categories.add(category.get('name'));
     categoriesID.add(category.id);
   }
+}
+
+void processingRequestSnackBar(BuildContext context) {
+  ScaffoldMessenger.of(context).clearSnackBars();
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Center(
+        child: Text('Processing Request.'),
+      ),
+    ),
+  );
+}
+
+void somethingWentWrongSnackBar(BuildContext context) {
+  ScaffoldMessenger.of(context).clearSnackBars();
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Center(
+        child: Text('Something went wrong.'),
+      ),
+    ),
+  );
 }
 
 extension StringCasingExtension on String {

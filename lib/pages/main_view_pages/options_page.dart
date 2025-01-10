@@ -1,12 +1,12 @@
-import 'package:citiguide_user/utils/constants.dart';
 import 'package:citiguide_user/view/user_favorites_view.dart';
-import 'package:citiguide_user/view/main_view.dart';
 import 'package:citiguide_user/view/options_view.dart';
 import 'package:citiguide_user/view/sign_in_view.dart';
 import 'package:citiguide_user/view/sign_up_view.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:citiguide_user/utils/constants.dart';
+import 'package:citiguide_user/view/main_view.dart';
 
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class OptionsPageAppBar extends StatelessWidget {
   const OptionsPageAppBar({super.key});
@@ -104,12 +104,14 @@ class OptionsViewAuthSection extends StatelessWidget {
         }
       } else {
         Navigator.pop(context);
+        processingRequestSnackBar(context);
         await firebaseFirestore
             .collection('users')
             .doc(userID)
             .update({'name': username});
         prefs.setString('username', username!);
         if (context.mounted) {
+          ScaffoldMessenger.of(context).clearSnackBars();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Center(
@@ -196,10 +198,12 @@ class OptionsViewAuthSection extends StatelessWidget {
     Future<void> onConfirm() async {
       try {
         Navigator.pop(context);
+        processingRequestSnackBar(context);
         await firebaseAuth.currentUser!.delete().then((value) {
           firebaseFirestore.collection('users').doc(userID).delete();
         });
         if (context.mounted) {
+          ScaffoldMessenger.of(context).clearSnackBars();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Center(
@@ -220,6 +224,7 @@ class OptionsViewAuthSection extends StatelessWidget {
               builder: (context) => SignInView(reauthForDeletion: true),
             ),
           );
+          ScaffoldMessenger.of(context).clearSnackBars();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Center(
@@ -229,15 +234,7 @@ class OptionsViewAuthSection extends StatelessWidget {
           );
         }
       } catch (e) {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Center(
-                child: Text('Account deleted succesfully.'),
-              ),
-            ),
-          );
-        }
+        if (context.mounted) somethingWentWrongSnackBar(context);
       }
     }
 

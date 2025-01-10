@@ -47,13 +47,7 @@ class _SignUpViewBodyState extends State<SignUpViewBody> {
 
     try {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Center(
-              child: Text('Processing request.'),
-            ),
-          ),
-        );
+        processingRequestSnackBar(context);
       }
 
       await firebaseAuth.createUserWithEmailAndPassword(
@@ -88,14 +82,7 @@ class _SignUpViewBodyState extends State<SignUpViewBody> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Colors.red,
-            content: Center(
-              child: Text('Something went wrong.'),
-            ),
-          ),
-        );
+        somethingWentWrongSnackBar(context);
       }
     }
   }

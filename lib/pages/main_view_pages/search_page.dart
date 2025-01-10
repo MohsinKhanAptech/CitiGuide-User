@@ -27,6 +27,7 @@ class _SearchPageBodyState extends State<SearchPageBody> {
   String selectedCategory = categories.elementAt(0);
   String selectedCategoryID = categoriesID.elementAt(0);
 
+  // TODO: add global search, to search through every category.
   Future<void> searchLocations(String query) async {
     setState(() {
       loading = true;

@@ -12,7 +12,7 @@ class UserFavoritesView extends StatelessWidget {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Favorites'),
+          title: Text('Your Favorites'),
         ),
         body: UserFavoritesViewBody(),
       ),
