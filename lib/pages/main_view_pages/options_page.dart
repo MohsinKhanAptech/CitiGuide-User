@@ -86,6 +86,72 @@ class OptionsPageBody extends StatelessWidget {
 class OptionsViewAuthSection extends StatelessWidget {
   const OptionsViewAuthSection({super.key});
 
+  Future<void> changeUsername(BuildContext context) async {
+    TextEditingController usernameController = TextEditingController();
+
+    Future<void> onConfirm() async {
+      username = usernameController.text.trim();
+
+      if (username!.isEmpty) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Center(
+                child: Text('Username invalid.'),
+              ),
+            ),
+          );
+        }
+      } else {
+        Navigator.pop(context);
+        await firebaseFirestore
+            .collection('users')
+            .doc(userID)
+            .update({'name': username});
+        prefs.setString('username', username!);
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Center(
+                child: Text('Username changed.'),
+              ),
+            ),
+          );
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => MainView()),
+          );
+        }
+      }
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Change Username.'),
+          content: TextField(
+            controller: usernameController,
+            decoration: InputDecoration(
+              label: Text('New Username'),
+              border: OutlineInputBorder(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: onConfirm,
+              child: const Text('Confirm'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void signOut(BuildContext context) {
     Future<void> onConfirm() async {
       Navigator.pop(context);
@@ -210,6 +276,7 @@ class OptionsViewAuthSection extends StatelessWidget {
           OptionsTile(
             icon: Icons.person,
             title: 'Change Username',
+            onTap: () => changeUsername(context),
           ),
           OptionsTile(
             icon: Icons.email,
