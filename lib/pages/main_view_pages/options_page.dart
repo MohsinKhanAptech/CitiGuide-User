@@ -1,3 +1,4 @@
+import 'package:citiguide_user/components/password_text_field.dart';
 import 'package:citiguide_user/view/user_favorites_view.dart';
 import 'package:citiguide_user/view/options_view.dart';
 import 'package:citiguide_user/view/sign_in_view.dart';
@@ -57,10 +58,17 @@ class OptionsPageBody extends StatelessWidget {
             icon: Icons.favorite,
             title: 'Your Favorites',
           ),
-          OptionsTile(
-            icon: Icons.star,
-            title: 'Your Reviews',
-          ),
+          //TODO: complete you reviews page.
+          //OptionsTile(
+          //  onTap: () {
+          //    Navigator.push(
+          //      context,
+          //      MaterialPageRoute(builder: (context) => UserReviewsView()),
+          //    );
+          //  },
+          //  icon: Icons.star,
+          //  title: 'Your Reviews',
+          //),
           OptionsTile(
             optionsPage: 0,
             icon: Icons.language,
@@ -154,11 +162,164 @@ class OptionsViewAuthSection extends StatelessWidget {
     );
   }
 
+  Future<void> changeEmail(BuildContext context) async {
+    TextEditingController emailController = TextEditingController();
+
+    Future<void> onConfirm() async {
+      String newEmail = emailController.text.trim();
+
+      if (newEmail.isEmpty) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Center(
+                child: Text('Email invalid.'),
+              ),
+            ),
+          );
+        }
+      } else {
+        Navigator.pop(context);
+        processingRequestSnackBar(context);
+        try {
+          firebaseAuth.currentUser!.verifyBeforeUpdateEmail(newEmail);
+        } catch (e) {
+          somethingWentWrongSnackBar(context);
+        }
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).clearSnackBars();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Center(
+                child: Text('Email changed.'),
+              ),
+            ),
+          );
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => MainView()),
+          );
+        }
+      }
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Change Email.'),
+          content: TextField(
+            controller: emailController,
+            decoration: InputDecoration(
+              label: Text('New Email'),
+              border: OutlineInputBorder(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: onConfirm,
+              child: const Text('Confirm'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> changePassword(BuildContext context) async {
+    TextEditingController passwordController = TextEditingController();
+
+    Future<void> onConfirm() async {
+      String newPassword = passwordController.text.trim();
+
+      if (newPassword.isEmpty) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Center(
+                child: Text('Password invalid.'),
+              ),
+            ),
+          );
+        }
+      } else {
+        Navigator.pop(context);
+        processingRequestSnackBar(context);
+        try {
+          await firebaseAuth.currentUser!.updatePassword(newPassword);
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).clearSnackBars();
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Center(
+                  child: Text('Password change succesful.'),
+                ),
+              ),
+            );
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => MainView()),
+            );
+          }
+        } on FirebaseAuthException {
+          await firebaseAuth.signOut();
+          if (context.mounted) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => SignInView(),
+              ),
+            );
+            ScaffoldMessenger.of(context).clearSnackBars();
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Center(
+                  child: Text('Sign-In to verify password change.'),
+                ),
+              ),
+            );
+          }
+        } catch (e) {
+          if (context.mounted) somethingWentWrongSnackBar(context);
+        }
+      }
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Change Password.'),
+          content: PasswordTextField(
+            controller: passwordController,
+            labelText: 'New Password',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: onConfirm,
+              child: const Text('Confirm'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void signOut(BuildContext context) {
     Future<void> onConfirm() async {
       Navigator.pop(context);
+      processingRequestSnackBar(context);
       firebaseAuth.signOut();
       if (context.mounted) {
+        ScaffoldMessenger.of(context).clearSnackBars();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Center(
@@ -278,10 +439,12 @@ class OptionsViewAuthSection extends StatelessWidget {
           OptionsTile(
             icon: Icons.email,
             title: 'Change Email',
+            onTap: () => changeEmail(context),
           ),
           OptionsTile(
             icon: Icons.password,
             title: 'Change Password',
+            onTap: () => changePassword(context),
           ),
           OptionsTile(
             icon: Icons.logout,
