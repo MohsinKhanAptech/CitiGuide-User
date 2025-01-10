@@ -57,10 +57,10 @@ class _CardRowState extends State<CardRow> {
                 ),
               ),
             ),
-            TextButton(
-              onPressed: () {},
-              child: const Text('see more >'),
-            ),
+            //TextButton(
+            //  onPressed: () {},
+            //  child: const Text('see more >'),
+            //),
           ],
         ),
         if (loading)
