@@ -8,6 +8,7 @@ import 'package:citiguide_user/view/main_view.dart';
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
 
 class OptionsPageAppBar extends StatelessWidget {
   const OptionsPageAppBar({super.key});
@@ -73,6 +74,13 @@ class OptionsPageBody extends StatelessWidget {
             optionsPage: 0,
             icon: Icons.language,
             title: 'Change Region',
+          ),
+          OptionsTile(
+            icon: Icons.dark_mode,
+            title: 'Change Theme',
+            onTap: () {
+              Provider.of<ThemeProvider>(context, listen: false).changeTheme();
+            },
           ),
           const Divider(),
           OptionsTile(
