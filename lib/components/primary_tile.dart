@@ -27,7 +27,6 @@ class _PrimaryTileState extends State<PrimaryTile> {
   late String locationID;
 
   late String cityName;
-  late String categoryName;
   late String locationName;
   late String locationImageUrl;
 
@@ -43,8 +42,6 @@ class _PrimaryTileState extends State<PrimaryTile> {
     locationID = widget.locationID;
 
     cityName = cities.elementAt(citiesID.toList().indexOf(cityID));
-    categoryName =
-        categories.elementAt(categoriesID.toList().indexOf(categoryID));
 
     DocumentSnapshot locationSnap = await citiesRef
         .doc(cityID)
@@ -121,11 +118,6 @@ class _PrimaryTileState extends State<PrimaryTile> {
                   SizedBox(height: 4),
                   Text(
                     'City: $cityName',
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  Text(
-                    'Category: $categoryName',
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(fontSize: 16),
                   ),
