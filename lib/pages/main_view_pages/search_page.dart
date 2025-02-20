@@ -1,5 +1,6 @@
-import 'package:citiguide_user/utils/constants.dart';
 import 'package:citiguide_user/view/detail_view.dart';
+import 'package:citiguide_user/utils/extensions.dart';
+import 'package:citiguide_user/utils/globals.dart';
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -21,9 +22,11 @@ class SearchPageBody extends StatefulWidget {
 }
 
 class _SearchPageBodyState extends State<SearchPageBody> {
+  bool loading = false;
+
   final TextEditingController searchController = TextEditingController();
   List<Map<String, String>> searchResults = [];
-  bool loading = false;
+
   String selectedCategory = categories.elementAt(0);
   String selectedCategoryID = categoriesID.elementAt(0);
 
@@ -74,10 +77,9 @@ class _SearchPageBodyState extends State<SearchPageBody> {
     selectedCategoryID = categoriesID.elementAt(
       categories.toList().indexOf(category),
     );
+
     searchController.clear();
-    setState(() {
-      searchResults.clear();
-    });
+    setState(() => searchResults.clear());
   }
 
   @override
@@ -147,7 +149,6 @@ class _SearchPageBodyState extends State<SearchPageBody> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => DetailView(
-                            cityID: selectedCityID!,
                             categoryID: searchResults[index]['categoryID']!,
                             locationID: searchResults[index]['locationID']!,
                           ),

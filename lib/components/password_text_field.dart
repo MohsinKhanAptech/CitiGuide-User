@@ -28,8 +28,10 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
   @override
   void initState() {
     super.initState();
-    icon = widget.suffixIcon;
-    obscureText = widget.obscureText;
+    setState(() {
+      icon = widget.suffixIcon;
+      obscureText = widget.obscureText;
+    });
   }
 
   void onPressed() {

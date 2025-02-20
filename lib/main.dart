@@ -1,15 +1,16 @@
 import 'package:citiguide_user/view/internet_unavailable_view.dart';
+import 'package:citiguide_user/utils/theme_provider.dart';
 import 'package:citiguide_user/view/loading_view.dart';
 import 'package:citiguide_user/view/splash_view.dart';
-import 'package:citiguide_user/utils/constants.dart';
 import 'package:citiguide_user/view/main_view.dart';
+import 'package:citiguide_user/utils/globals.dart';
 
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:citiguide_user/firebase_options.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
-import 'package:provider/provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,6 +20,7 @@ Future<void> main() async {
   ThemeProvider themeProvider = ThemeProvider();
   await themeProvider.getTheme();
   runApp(
+    // FIXME: theme change seems to be buggy.
     ChangeNotifierProvider(
       create: (context) => ThemeProvider(),
       child: const MyApp(),
@@ -60,17 +62,21 @@ class _HomeState extends State<Home> {
   late StreamSubscription<InternetConnectionStatus> subscription;
 
   Future<void> getSelectedCity() async {
-    String? city = prefs.getString('city');
-    setState(() => selectedCity = cities.lookup(city));
-    String? cityID = prefs.getString('cityID');
-    setState(() => selectedCityID = citiesID.lookup(cityID));
+    String? savedCity = prefs.getString('city');
+    String? savedCityID = prefs.getString('cityID');
+
+    // TODO: why is this here? why are we changing the state?
+    setState(() {
+      selectedCity = cities.lookup(savedCity);
+      selectedCityID = citiesID.lookup(savedCityID);
+    });
   }
 
   @override
   void initState() {
     super.initState();
 
-    initConstants(getSelectedCity).then((value) {
+    initGlobals(getSelectedCity).then((value) {
       setState(() => loading = false);
     });
 
@@ -113,6 +119,7 @@ class _HomeState extends State<Home> {
 
   @override
   void dispose() {
+    subscription.cancel();
     connectionChecker.dispose();
     super.dispose();
   }

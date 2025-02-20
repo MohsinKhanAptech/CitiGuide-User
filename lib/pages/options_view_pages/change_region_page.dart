@@ -1,4 +1,5 @@
-import 'package:citiguide_user/utils/constants.dart';
+import 'package:citiguide_user/utils/extensions.dart';
+import 'package:citiguide_user/utils/globals.dart';
 
 import 'package:flutter/material.dart';
 
@@ -16,7 +17,7 @@ class ChangeRegionPage extends StatelessWidget {
       }
     }
 
-    void onSelected(String? city) {
+    Future<void> onSelected(String? city) async {
       selectedCity = city;
       selectedCityID = citiesID.elementAt(cities.toList().indexOf(city!));
     }

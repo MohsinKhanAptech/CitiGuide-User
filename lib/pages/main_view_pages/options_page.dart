@@ -1,14 +1,15 @@
 import 'package:citiguide_user/components/password_text_field.dart';
-import 'package:citiguide_user/view/user_favorites_view.dart';
+import 'package:citiguide_user/utils/theme_provider.dart';
+import 'package:citiguide_user/components/snackbars.dart';
 import 'package:citiguide_user/view/options_view.dart';
 import 'package:citiguide_user/view/sign_in_view.dart';
 import 'package:citiguide_user/view/sign_up_view.dart';
-import 'package:citiguide_user/utils/constants.dart';
 import 'package:citiguide_user/view/main_view.dart';
+import 'package:citiguide_user/utils/globals.dart';
 
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class OptionsPageAppBar extends StatelessWidget {
   const OptionsPageAppBar({super.key});
@@ -50,28 +51,18 @@ class OptionsPageBody extends StatelessWidget {
           ),
           OptionsViewAuthSection(),
           OptionsTile(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => UserFavoritesView()),
-              );
-            },
+            optionsPage: OptionsViewPage.userFavorites,
             icon: Icons.favorite,
             title: 'Your Favorites',
           ),
-          //TODO: complete you reviews page.
-          //OptionsTile(
-          //  onTap: () {
-          //    Navigator.push(
-          //      context,
-          //      MaterialPageRoute(builder: (context) => UserReviewsView()),
-          //    );
-          //  },
-          //  icon: Icons.star,
-          //  title: 'Your Reviews',
-          //),
+          //TODO: complete user reviews page.
           OptionsTile(
-            optionsPage: 0,
+            optionsPage: OptionsViewPage.userReviews,
+            icon: Icons.star,
+            title: 'Your Reviews',
+          ),
+          OptionsTile(
+            optionsPage: OptionsViewPage.changeRegion,
             icon: Icons.language,
             title: 'Change Region',
           ),
@@ -84,12 +75,12 @@ class OptionsPageBody extends StatelessWidget {
           ),
           const Divider(),
           OptionsTile(
-            optionsPage: 1,
+            optionsPage: OptionsViewPage.about,
             icon: Icons.info,
             title: 'About',
           ),
           OptionsTile(
-            optionsPage: 2,
+            optionsPage: OptionsViewPage.help,
             icon: Icons.help,
             title: 'Help',
           ),
@@ -102,6 +93,17 @@ class OptionsPageBody extends StatelessWidget {
 class OptionsViewAuthSection extends StatelessWidget {
   const OptionsViewAuthSection({super.key});
 
+  void showSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Center(
+          child: Text(message),
+        ),
+      ),
+    );
+  }
+
   Future<void> changeUsername(BuildContext context) async {
     TextEditingController usernameController = TextEditingController();
 
@@ -110,31 +112,23 @@ class OptionsViewAuthSection extends StatelessWidget {
 
       if (username!.isEmpty) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Center(
-                child: Text('Username invalid.'),
-              ),
-            ),
-          );
+          showSnackBar(context, 'Username invalid.');
         }
       } else {
         Navigator.pop(context);
+
         processingRequestSnackBar(context);
+
         await firebaseFirestore
             .collection('users')
             .doc(userID)
             .update({'name': username});
+
         prefs.setString('username', username!);
+
         if (context.mounted) {
-          ScaffoldMessenger.of(context).clearSnackBars();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Center(
-                child: Text('Username changed.'),
-              ),
-            ),
-          );
+          showSnackBar(context, 'Username changed.');
+
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => MainView()),
@@ -177,32 +171,21 @@ class OptionsViewAuthSection extends StatelessWidget {
       String newEmail = emailController.text.trim();
 
       if (newEmail.isEmpty) {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Center(
-                child: Text('Email invalid.'),
-              ),
-            ),
-          );
-        }
+        if (context.mounted) showSnackBar(context, 'Email invalid.');
       } else {
         Navigator.pop(context);
+
         processingRequestSnackBar(context);
+
         try {
           firebaseAuth.currentUser!.verifyBeforeUpdateEmail(newEmail);
         } catch (e) {
           somethingWentWrongSnackBar(context);
         }
+
         if (context.mounted) {
-          ScaffoldMessenger.of(context).clearSnackBars();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Center(
-                child: Text('Email changed.'),
-              ),
-            ),
-          );
+          showSnackBar(context, 'Email changed.');
+
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => MainView()),
@@ -246,28 +229,19 @@ class OptionsViewAuthSection extends StatelessWidget {
 
       if (newPassword.isEmpty) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Center(
-                child: Text('Password invalid.'),
-              ),
-            ),
-          );
+          showSnackBar(context, 'Password invalid.');
         }
       } else {
         Navigator.pop(context);
+
         processingRequestSnackBar(context);
+
         try {
           await firebaseAuth.currentUser!.updatePassword(newPassword);
+
           if (context.mounted) {
-            ScaffoldMessenger.of(context).clearSnackBars();
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Center(
-                  child: Text('Password change succesful.'),
-                ),
-              ),
-            );
+            showSnackBar(context, 'Password changed.');
+
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => MainView()),
@@ -275,19 +249,14 @@ class OptionsViewAuthSection extends StatelessWidget {
           }
         } on FirebaseAuthException {
           await firebaseAuth.signOut();
+
           if (context.mounted) {
+            showSnackBar(context, 'Sign-In to verify password change.');
+
             Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => SignInView(),
-              ),
-            );
-            ScaffoldMessenger.of(context).clearSnackBars();
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Center(
-                  child: Text('Sign-In to verify password change.'),
-                ),
               ),
             );
           }
@@ -321,20 +290,17 @@ class OptionsViewAuthSection extends StatelessWidget {
     );
   }
 
-  void signOut(BuildContext context) {
+  Future<void> signOut(BuildContext context) async {
     Future<void> onConfirm() async {
       Navigator.pop(context);
+
       processingRequestSnackBar(context);
+
       firebaseAuth.signOut();
+
       if (context.mounted) {
-        ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Center(
-              child: Text('Sign-out succesful.'),
-            ),
-          ),
-        );
+        showSnackBar(context, 'Signed-out succesfully.');
+
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => MainView()),
@@ -363,23 +329,19 @@ class OptionsViewAuthSection extends StatelessWidget {
     );
   }
 
-  void deleteAccount(BuildContext context) {
+  Future<void> deleteAccount(BuildContext context) async {
     Future<void> onConfirm() async {
       try {
         Navigator.pop(context);
+
         processingRequestSnackBar(context);
+
         await firebaseAuth.currentUser!.delete().then((value) {
           firebaseFirestore.collection('users').doc(userID).delete();
         });
+
         if (context.mounted) {
-          ScaffoldMessenger.of(context).clearSnackBars();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Center(
-                child: Text('Account deleted succesfully.'),
-              ),
-            ),
-          );
+          showSnackBar(context, 'Account deleted.');
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => MainView()),
@@ -387,18 +349,12 @@ class OptionsViewAuthSection extends StatelessWidget {
         }
       } on FirebaseAuthException {
         if (context.mounted) {
+          showSnackBar(context, 'Sign-In to delete account.');
+
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => SignInView(reauthForDeletion: true),
-            ),
-          );
-          ScaffoldMessenger.of(context).clearSnackBars();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Center(
-                child: Text('Sign-In to verify account deletion.'),
-              ),
             ),
           );
         }
@@ -507,7 +463,7 @@ class OptionsTile extends StatelessWidget {
     this.onTap,
   });
 
-  final int? optionsPage;
+  final OptionsViewPage? optionsPage;
   final IconData icon;
   final String title;
   final VoidCallback? onTap;

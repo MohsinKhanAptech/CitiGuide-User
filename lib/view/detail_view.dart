@@ -2,7 +2,8 @@ import 'package:citiguide_user/components/action_button.dart';
 import 'package:citiguide_user/components/map_preview.dart';
 import 'package:citiguide_user/view/reviews_view.dart';
 import 'package:citiguide_user/view/sign_in_view.dart';
-import 'package:citiguide_user/utils/constants.dart';
+import 'package:citiguide_user/utils/extensions.dart';
+import 'package:citiguide_user/utils/globals.dart';
 import 'package:citiguide_user/view/map_view.dart';
 
 import 'package:flutter/material.dart';
@@ -12,12 +13,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class DetailView extends StatefulWidget {
   const DetailView({
     super.key,
-    required this.cityID,
+    this.cityID,
     required this.categoryID,
     required this.locationID,
   });
 
-  final String cityID;
+  final String? cityID;
   final String categoryID;
   final String locationID;
 
@@ -30,15 +31,21 @@ class _DetailViewState extends State<DetailView> {
   late DocumentSnapshot locationSnap;
 
   Future<void> getData() async {
-    String cityID = widget.cityID;
+    try {
+      String cityID = widget.cityID ?? selectedCityID!;
 
-    locationSnap = await citiesRef
-        .doc(cityID)
-        .collection('categories')
-        .doc(widget.categoryID)
-        .collection('locations')
-        .doc(widget.locationID)
-        .get();
+      locationSnap = await citiesRef
+          .doc(cityID)
+          .collection('categories')
+          .doc(widget.categoryID)
+          .collection('locations')
+          .doc(widget.locationID)
+          .get();
+    } catch (e) {
+      print(e);
+    } finally {
+      setState(() => loading = false);
+    }
   }
 
   @override
@@ -62,7 +69,7 @@ class _DetailViewState extends State<DetailView> {
       child: Scaffold(
         appBar: DetailViewAppBar(locationSnap: locationSnap),
         body: DetailViewBody(
-          cityID: widget.cityID,
+          cityID: widget.cityID ?? selectedCityID!,
           categoryID: widget.categoryID,
           locationSnap: locationSnap,
         ),

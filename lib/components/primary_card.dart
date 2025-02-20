@@ -1,25 +1,24 @@
-import 'package:citiguide_user/utils/constants.dart';
 import 'package:citiguide_user/view/detail_view.dart';
+import 'package:citiguide_user/utils/extensions.dart';
+import 'package:citiguide_user/utils/globals.dart';
 
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PrimaryCard extends StatelessWidget {
   const PrimaryCard({
     super.key,
-    required this.locationImageUrl,
-    required this.locationName,
-    required this.locationID,
+    required this.locationSnap,
     required this.categoryID,
-    required this.cityID,
+    this.cityID,
     this.height,
     this.width,
   });
 
-  final String locationImageUrl;
-  final String locationName;
-  final String locationID;
+  final QueryDocumentSnapshot locationSnap;
   final String categoryID;
-  final String cityID;
+  final String? cityID;
+
   final double? height;
   final double? width;
 
@@ -28,9 +27,9 @@ class PrimaryCard extends StatelessWidget {
       context,
       MaterialPageRoute(
         builder: (context) => DetailView(
-          cityID: cityID,
+          cityID: cityID ?? selectedCityID!,
           categoryID: categoryID,
-          locationID: locationID,
+          locationID: locationSnap.id,
         ),
       ),
     );
@@ -55,7 +54,7 @@ class PrimaryCard extends StatelessWidget {
                     color: Colors.grey.shade400,
                     borderRadius: BorderRadius.circular(8),
                     image: DecorationImage(
-                      image: NetworkImage(locationImageUrl),
+                      image: NetworkImage(locationSnap.get('imageUrl')),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -66,7 +65,7 @@ class PrimaryCard extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Text(
-                  locationName.toTitleCase,
+                  locationSnap.get('name').toString().toTitleCase,
                   style: const TextStyle(
                     fontSize: 14,
                     overflow: TextOverflow.ellipsis,

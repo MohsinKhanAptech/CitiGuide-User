@@ -1,7 +1,7 @@
 import 'package:citiguide_user/components/review_card.dart';
 import 'package:citiguide_user/view/review_add_view.dart';
-import 'package:citiguide_user/utils/constants.dart';
 import 'package:citiguide_user/view/sign_in_view.dart';
+import 'package:citiguide_user/utils/globals.dart';
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

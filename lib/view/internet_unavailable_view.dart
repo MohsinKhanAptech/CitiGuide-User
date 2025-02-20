@@ -46,7 +46,6 @@ class _InternetUnavailableViewState extends State<InternetUnavailableView> {
               ),
               Text(
                 'check you connection and try again',
-                style: TextStyle(),
               ),
               SizedBox(height: 12),
               ElevatedButton(

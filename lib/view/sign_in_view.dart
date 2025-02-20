@@ -1,42 +1,31 @@
 import 'package:citiguide_user/components/password_text_field.dart';
-import 'package:citiguide_user/utils/constants.dart';
-import 'package:citiguide_user/view/main_view.dart';
+import 'package:citiguide_user/components/snackbars.dart';
 import 'package:citiguide_user/view/sign_up_view.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:email_validator/email_validator.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:citiguide_user/view/main_view.dart';
+import 'package:citiguide_user/utils/globals.dart';
 
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:email_validator/email_validator.dart';
 
 class SignInView extends StatelessWidget {
-  const SignInView({
-    super.key,
-    this.canPop = true,
-    this.reauthForDeletion = false,
-  });
-  final bool canPop;
+  const SignInView({super.key, this.reauthForDeletion = false});
   final bool reauthForDeletion;
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: SignInViewBody(
-          canPop: canPop,
-          reauthForDeletion: reauthForDeletion,
-        ),
+        appBar: AppBar(),
+        body: SignInViewBody(reauthForDeletion: reauthForDeletion),
       ),
     );
   }
 }
 
 class SignInViewBody extends StatefulWidget {
-  const SignInViewBody({
-    super.key,
-    required this.canPop,
-    required this.reauthForDeletion,
-  });
-  final bool canPop;
+  const SignInViewBody({super.key, required this.reauthForDeletion});
   final bool reauthForDeletion;
 
   @override
@@ -215,21 +204,20 @@ class _SignInViewBodyState extends State<SignInViewBody> {
                 ),
               ),
               SizedBox(height: 12),
-              if (widget.canPop)
-                ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  style: const ButtonStyle(
-                    padding: WidgetStatePropertyAll(EdgeInsets.all(18)),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.chevron_left),
-                      Text('Cancel', style: TextStyle(fontSize: 16)),
-                      SizedBox(width: 10),
-                    ],
-                  ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                style: const ButtonStyle(
+                  padding: WidgetStatePropertyAll(EdgeInsets.all(18)),
                 ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.chevron_left),
+                    Text('Cancel', style: TextStyle(fontSize: 16)),
+                    SizedBox(width: 10),
+                  ],
+                ),
+              ),
             ],
           ),
         ),

@@ -1,8 +1,9 @@
-import 'package:citiguide_user/utils/constants.dart';
 import 'package:citiguide_user/view/detail_view.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:citiguide_user/utils/extensions.dart';
+import 'package:citiguide_user/utils/globals.dart';
 
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PrimaryTile extends StatefulWidget {
   const PrimaryTile({

@@ -1,8 +1,8 @@
 import 'package:citiguide_user/components/primary_card.dart';
-import 'package:citiguide_user/utils/constants.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:citiguide_user/utils/globals.dart';
 
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CardRow extends StatefulWidget {
   const CardRow({
@@ -10,13 +10,13 @@ class CardRow extends StatefulWidget {
     required this.title,
     required this.category,
     required this.categoryID,
-    required this.cityID,
+    this.cityID,
   });
 
   final String title;
   final String category;
   final String categoryID;
-  final String cityID;
+  final String? cityID;
 
   @override
   State<CardRow> createState() => _CardRowState();
@@ -24,10 +24,10 @@ class CardRow extends StatefulWidget {
 
 class _CardRowState extends State<CardRow> {
   bool loading = true;
-  late QuerySnapshot<Object?> querySnapshot;
+  late QuerySnapshot<Object?> locationsSnap;
 
   Future<void> getData() async {
-    querySnapshot = await citiesRef
+    locationsSnap = await citiesRef
         .doc(selectedCityID)
         .collection('categories')
         .doc(widget.categoryID)
@@ -59,10 +59,12 @@ class _CardRowState extends State<CardRow> {
                 ),
               ),
             ),
-            //TextButton(
-            //  onPressed: () {},
-            //  child: const Text('see more >'),
-            //),
+            // TODO: implement a category list view to show
+            // when "see more" button is pressed.
+            TextButton(
+              onPressed: () {},
+              child: const Text('see more >'),
+            ),
           ],
         ),
         if (loading)
@@ -78,16 +80,14 @@ class _CardRowState extends State<CardRow> {
             child: ListView.builder(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               scrollDirection: Axis.horizontal,
-              itemCount: querySnapshot.size,
+              itemCount: locationsSnap.size,
               shrinkWrap: true,
               itemBuilder: (context, index) {
                 return PrimaryCard(
                   width: 200,
-                  locationID: querySnapshot.docs[index].id,
-                  locationName: querySnapshot.docs[index].get('name'),
-                  locationImageUrl: querySnapshot.docs[index].get('imageUrl'),
+                  locationSnap: locationsSnap.docs[index],
                   categoryID: widget.categoryID,
-                  cityID: widget.cityID,
+                  cityID: widget.cityID ?? selectedCityID,
                 );
               },
             ),

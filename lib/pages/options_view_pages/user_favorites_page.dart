@@ -1,33 +1,17 @@
 import 'package:citiguide_user/components/primary_tile.dart';
 import 'package:citiguide_user/view/sign_in_view.dart';
-import 'package:citiguide_user/utils/constants.dart';
+import 'package:citiguide_user/utils/globals.dart';
 
 import 'package:flutter/material.dart';
 
-class UserFavoritesView extends StatelessWidget {
-  const UserFavoritesView({super.key});
+class UserFavoritesPage extends StatefulWidget {
+  const UserFavoritesPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('Your Favorites'),
-        ),
-        body: UserFavoritesViewBody(),
-      ),
-    );
-  }
+  State<UserFavoritesPage> createState() => _UserFavoritesPageState();
 }
 
-class UserFavoritesViewBody extends StatefulWidget {
-  const UserFavoritesViewBody({super.key});
-
-  @override
-  State<UserFavoritesViewBody> createState() => _UserFavoritesViewBodyState();
-}
-
-class _UserFavoritesViewBodyState extends State<UserFavoritesViewBody> {
+class _UserFavoritesPageState extends State<UserFavoritesPage> {
   bool loading = true;
 
   @override

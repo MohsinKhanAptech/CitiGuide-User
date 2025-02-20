@@ -1,9 +1,8 @@
-import 'dart:async';
-
 import 'package:citiguide_user/pages/main_view_pages/discover_page.dart';
-import 'package:citiguide_user/pages/main_view_pages/search_page.dart';
 import 'package:citiguide_user/pages/main_view_pages/options_page.dart';
+import 'package:citiguide_user/pages/main_view_pages/search_page.dart';
 
+import 'dart:async';
 import 'package:flutter/material.dart';
 
 class MainView extends StatefulWidget {

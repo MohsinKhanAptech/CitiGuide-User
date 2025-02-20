@@ -1,5 +1,5 @@
 import 'package:citiguide_user/components/card_row.dart';
-import 'package:citiguide_user/utils/constants.dart';
+import 'package:citiguide_user/utils/globals.dart';
 
 import 'package:flutter/material.dart';
 
@@ -19,6 +19,7 @@ class _DiscoverPageAppBarState extends State<DiscoverPageAppBar> {
         PopupMenuButton(
           itemBuilder: (BuildContext context) => [
             PopupMenuItem(
+              // TODO: implement a refresh function.
               child: Text('Refresh'),
               onTap: () {},
             ),
@@ -41,7 +42,6 @@ class DiscoverPageBody extends StatelessWidget {
           title: '${categories.elementAt(index)} in $selectedCity',
           category: categories.elementAt(index),
           categoryID: categoriesID.elementAt(index),
-          cityID: selectedCityID!,
         );
       },
     );

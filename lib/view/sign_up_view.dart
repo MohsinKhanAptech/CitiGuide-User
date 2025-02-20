@@ -1,27 +1,27 @@
 import 'package:citiguide_user/components/password_text_field.dart';
-import 'package:citiguide_user/utils/constants.dart';
+import 'package:citiguide_user/components/snackbars.dart';
 import 'package:citiguide_user/view/sign_in_view.dart';
-import 'package:email_validator/email_validator.dart';
+import 'package:citiguide_user/utils/globals.dart';
 
 import 'package:flutter/material.dart';
+import 'package:email_validator/email_validator.dart';
 
 class SignUpView extends StatelessWidget {
-  const SignUpView({super.key, this.canPop = true});
-  final bool canPop;
+  const SignUpView({super.key});
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: SignUpViewBody(canPop: canPop),
+        appBar: AppBar(),
+        body: SignUpViewBody(),
       ),
     );
   }
 }
 
 class SignUpViewBody extends StatefulWidget {
-  const SignUpViewBody({super.key, required this.canPop});
-  final bool canPop;
+  const SignUpViewBody({super.key});
 
   @override
   State<SignUpViewBody> createState() => _SignUpViewBodyState();
@@ -192,21 +192,20 @@ class _SignUpViewBodyState extends State<SignUpViewBody> {
                 ),
               ),
               SizedBox(height: 12),
-              if (widget.canPop)
-                ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  style: const ButtonStyle(
-                    padding: WidgetStatePropertyAll(EdgeInsets.all(18)),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.chevron_left),
-                      Text('Cancel', style: TextStyle(fontSize: 16)),
-                      SizedBox(width: 10),
-                    ],
-                  ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                style: const ButtonStyle(
+                  padding: WidgetStatePropertyAll(EdgeInsets.all(18)),
                 ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.chevron_left),
+                    Text('Cancel', style: TextStyle(fontSize: 16)),
+                    SizedBox(width: 10),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
