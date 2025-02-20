@@ -32,12 +32,14 @@ class _SearchPageBodyState extends State<SearchPageBody> {
 
   // TODO: add global search, to search through every category.
   Future<void> searchLocations(String query) async {
-    setState(() {
-      loading = true;
-      searchResults.clear();
-    });
+    if (query.length < 3) return;
 
     try {
+      setState(() {
+        loading = true;
+        searchResults.clear();
+      });
+
       CollectionReference locationsRef = citiesRef
           .doc(selectedCityID)
           .collection('categories')
@@ -129,6 +131,11 @@ class _SearchPageBodyState extends State<SearchPageBody> {
             const Padding(
               padding: EdgeInsets.all(12),
               child: CircularProgressIndicator(),
+            )
+          else if (searchController.text.length < 3)
+            Padding(
+              padding: EdgeInsets.all(12),
+              child: Text('search query mush be atleast 3 letters long.'),
             )
           else if (searchController.text.isNotEmpty && searchResults.isEmpty)
             Padding(
